@@ -2,7 +2,7 @@ import { Outlet,Navigate } from "react-router-dom";
 
 function RequireAuth() {
   
-  const auth = true;
+  const auth = false;
   return <>{auth ? <Outlet /> : <Navigate to="/unauthorized" />  }</>;
 }
 export default RequireAuth;

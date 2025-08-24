@@ -3,6 +3,7 @@ import { createBrowserRouter } from "react-router-dom";
 import LandingPageLayout from "./layout/LandingPageLayout";
 import Unauthorized from "./pages/Unauthorized";
 import RequireAuth from "./auth/RequireAuth";
+import RequireRole from "./auth/RequireRole";
 
 import ErrorPage from "./pages/ErrorPage";
 import Home from "./pages/Home";
@@ -20,17 +21,23 @@ const router = createBrowserRouter([
       { index: true, element: <Home /> },
       { path: "login", element: <Login /> },
       { path: "unauthorized", element: <Unauthorized /> },
-      //protected route
+
+      // Protected user route
       {
         element: <RequireAuth />,
         children: [
-          //user route
           {
             path: "user",
             element: <UserLayout />,
             children: [{ index: true, element: <UserDashboard /> }],
           },
-          //admin layout
+        ],
+      },
+
+      // Protected admin route
+      {
+        element: <RequireRole />,
+        children: [
           {
             path: "admin",
             element: <AdminLayout />,

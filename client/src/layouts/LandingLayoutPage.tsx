@@ -1,18 +1,18 @@
 import { Outlet } from "react-router-dom";
 
-export const LandingLayoutPage = () => {
+function LandingLayoutPage(){
   return (
     <div>
       <header>
-        {/* Add your header/navigation here */}
-        <nav>{/* Add your navigation links here */}</nav>
+        <nav>This is the landing page</nav>
       </header>
 
       <main>
         <Outlet />
       </main>
 
-      <footer>{/* Add your footer content here */}</footer>
+      <footer></footer>
     </div>
   );
 };
+export default LandingLayoutPage;

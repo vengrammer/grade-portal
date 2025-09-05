@@ -1,55 +1,70 @@
 import { createBrowserRouter } from "react-router-dom";
 
-//layout
-import AdminLayoutPage from "./layouts/AdminLayout";
-import UserLayoutPage from "./layouts/UserLayout";
-import LandingLayoutPage from "./layouts/LandingPageLayout";
+// Layouts
+import LandingLayoutPage from "./layouts/LandingLayoutPage";
+import UserLayout from "./layouts/StudentLayout";
+import AdminLayout from "./layouts/AdminLayout";
 
-//components
+// Auth Guards
+import AdminAuthRoute from "./auth/AdminAuthRoute";
+import StudentAuthRoute from "./auth/StudentAuthRoute";
+
+// Pages
 import ErrorPage from "./components/ErroPage";
-import Login from "./components/Login";
-import { ProtectedRoute } from "./components/ProtectedRoute";
+import AdminHomePage from "./Adminpages/AdminHomePage";
+import UserHomePage from "./UserPages/UserHomePage";
 
 const routes = createBrowserRouter([
   {
+    path: "/",
     element: <LandingLayoutPage />,
     errorElement: <ErrorPage />,
     children: [
       {
         index: true,
-        element: <Login />,
+        element: <div>Welcome to Grade Portal</div>,
       },
+    ],
+  },
+
+  // Student Routes
+  {
+    path: "/student",
+    element: <StudentAuthRoute />,
+    errorElement: <ErrorPage />,
+    children: [
       {
-        path: "admin",
-        element: (
-          <ProtectedRoute
-            isAllowed={localStorage.getItem("role") === "admin"}
-          />
-        ),
+        element: <UserLayout />,
         children: [
           {
-            element: <AdminLayoutPage />,
-            children: [
-              {
-                index: true,
-                element: <div>Admin Dashboard</div>,
-              },
-            ],
+            index: true,
+            element: <UserHomePage />,
+          },
+          {
+            path: "dashboard",
+            element: <UserHomePage />,
           },
         ],
       },
+    ],
+  },
+
+  // Admin Routes
+  {
+    path: "/admin",
+    element: <AdminAuthRoute />,
+    errorElement: <ErrorPage />,
+    children: [
       {
-        path: "user",
-        element: <ProtectedRoute isAllowed={!!localStorage.getItem("token")} />,
+        element: <AdminLayout />,
         children: [
           {
-            element: <UserLayoutPage />,
-            children: [
-              {
-                index: true,
-                element: <div>User Dashboard</div>,
-              },
-            ],
+            index: true,
+            element: <AdminHomePage />,
+          },
+          {
+            path: "dashboard",
+            element: <AdminHomePage />,
           },
         ],
       },

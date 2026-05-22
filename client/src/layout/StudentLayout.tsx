@@ -33,7 +33,7 @@ function StudentLayout() {
     function MobileModal() {
 
         return (
-            <div className="flex absolute z-10 justify-center items-center self-end rounded border  bg-gray-300 mt-17 mr-4">
+            <div className="flex absolute z-10 justify-center items-center  self-end rounded border  bg-gray-300 mt-17 mr-4 ">
                 <div className="flex flex-col px-5  py-4  rounded gap-2">
                     {routes.map((route) => <Link key={route.name} to={route.path} className=" text-[#02087b] px-4 hover:bg-[#0bebff] rounded">{route.name}</Link>)}
                     <button className="bg-[#ff0808] text-white flex gap-2 justify-center items-center rounded hover:bg-[#88001b] cursor-pointer">Log out <ArrowRight size={20} /></button>
@@ -50,7 +50,7 @@ function StudentLayout() {
                     <span className="text-2xl font-bold">Grade Portal</span>
                 </div>
                 {isMobile ? (mobileOpen ? <X size={40} className="text-[#00ff0888] cursor-pointer " onClick={() => setMobileOpen(false)} /> : <Menu size={40} className="text-[#00ff0888] cursor-pointer" onClick={() => setMobileOpen(true)} />) :
-                    (<div className="flex flex-1 items-center justify-center">
+                    (<div className="flex flex-1 items-center justify-center ">
                         <ul className="flex gap-20 text-xl">
                             {routes.map((route) => <li>
                                 <Link key={route.name} to={route.path} className="hover:text-[#41d203]">

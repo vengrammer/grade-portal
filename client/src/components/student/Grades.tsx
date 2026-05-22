@@ -1,5 +1,6 @@
 import { BookOpenCheck } from "lucide-react"
 import sampleProfile from "../../assets/sampleProfile.jpg"
+import { Printer } from "lucide-react"
 
 function Grades() {
 
@@ -14,34 +15,39 @@ function Grades() {
         schoolYear: "2022-2023",
         sem: "1st",
         strand: "STEM",
-        section: "A"
+        section: "A",
+        status: "Regular"
     }]
 
     const containerStyle = "flex  flex-col items-center justify-center"
     const valueStyle = "text-sm font-semibold text-[#053fbb]"
     const labelStyle = "text-sm text-gray-500"
     return (
-        <div className="flex flex-col  flex-1 w-full justify-center items-center overflow-y-auto p-2 ">
-            <div className="w-full flex border-b p-2">
-                <div className="w-full  flex items-center justify-center gap-3">
+        <div className="flex flex-col  flex-1  justify-center items-center overflow-y-auto p-2 ">
+            <div className="w-full flex p-2">
+                <div className="w-full flex-1 flex items-center justify-center gap-5">
+                    <p className="font-bold text-xl">Filter:</p>
                     <div className="flex gap-2 ">
-                        <p>Year</p>
-                        <select name="year" id="year" className="border">
+                        <p className="font-semibold">Year</p>
+                        <select name="year" id="year" className="border rounded">
                             <option value="2022-2023">2022-2023</option>
                             <option value="2021-2022">2021-2022</option>
                             <option value="2020-2021">2020-2021</option>
                         </select>
                     </div>
                     <div className="flex gap-2 ">
-                        <p>Semester</p>
-                        <select name="sem" id="sem" className="border">
+                        <p className="font-semibold">Semester</p>
+                        <select name="sem" id="sem" className="border rounded">
                             <option value="1st">1st</option>
                             <option value="Summer">Summer</option>
                             <option value="2nd">2nd</option>
-
                         </select>
                     </div>
+                    <button className=" bg-blue-600 rounded-xl px-10 lg:ml-40     py-1 text-white font-bold flex gap-2 items-center justify-center"><Printer size={20} /><span>Print</span></button>
+
                 </div>
+
+                
             </div>
             <div className="flex lg:w-270 h-full md:h-full w-full flex-col min-h-0 lg:border rounded bg-[#d5dcdb] gap-2">
                 <header>
@@ -79,7 +85,7 @@ function Grades() {
                                 <span className={labelStyle}>Gender</span>
                             </div>
                         </div>
-                        <div className="grid grid-cols-5 w-full">
+                        <div className="grid lg:grid-cols-6 grid-cols-3 w-full">
                             <div className={containerStyle}>
                                 <span className={valueStyle}>{student.studentNumber}</span>
                                 <span className={`${labelStyle} nowrap flex`} >Sudent No.</span>
@@ -99,6 +105,10 @@ function Grades() {
                             <div className={containerStyle}>
                                 <span className={valueStyle}>{student.strand}</span>
                                 <span className={labelStyle}>Strand</span>
+                            </div>
+                            <div className={containerStyle}>
+                                <span className={valueStyle}>{student.status}</span>
+                                <span className={labelStyle}>Status</span>
                             </div>
                         </div>
                     </div>)}

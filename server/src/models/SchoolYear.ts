@@ -18,7 +18,4 @@ const schoolYearSchema = new Schema<ISchoolYear>(
 
 schoolYearSchema.index({ school_year: 1 }, { unique: true });
 
-export const SchoolYear = model<ISchoolYear>(
-    "SchoolYear",
-    schoolYearSchema
-);
+export const SchoolYear = model<ISchoolYear>("SchoolYear",schoolYearSchema);

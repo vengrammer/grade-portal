@@ -44,7 +44,4 @@ enrollmentSchema.index(
     { unique: true }
 );
 
-export const Enrollment = model<IEnrollment>(
-    "Enrollment",
-    enrollmentSchema
-);
+export const Enrollment = model<IEnrollment>("Enrollment",enrollmentSchema);

@@ -11,7 +11,4 @@ const gradeLevelSchema = new Schema<IGradeLevel>(
     { timestamps: true }
 );
 
-export const GradeLevel = model<IGradeLevel>(
-    "GradeLevel",
-    gradeLevelSchema
-);
+export const GradeLevel = model<IGradeLevel>("GradeLevel",gradeLevelSchema);

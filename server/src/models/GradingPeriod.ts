@@ -17,7 +17,4 @@ const gradingPeriodSchema = new Schema<IGradingPeriod>(
     { timestamps: true }
 );
 
-export const GradingPeriod = model<IGradingPeriod>(
-    "GradingPeriod",
-    gradingPeriodSchema
-);
+export const GradingPeriod = model<IGradingPeriod>("GradingPeriod",gradingPeriodSchema);

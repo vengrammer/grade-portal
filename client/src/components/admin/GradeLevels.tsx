@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 import { useState, useEffect } from "react";
 
 import { getGradeLevels, addGradeLevel } from "../../hooks/gradeLevel";
-import type { GradeLevel } from "../../types/gradeLevel";
+import type { GradeLevelType } from "../../types/gradeLevel.type";
 import { dateFormatter } from "../../utils/dateFormatter";
 
 interface AddGradeLevelProps {
@@ -17,21 +17,23 @@ interface AddGradeLevelProps {
 }
 
 export function AddGradeLevel({ onClose, openModal, refreshGradeLevels }: AddGradeLevelProps) {
-    
+
     const [gradeName, setGradeName] = useState("");
 
     async function onSubmit(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
+        if (!gradeName) {
+            toast.error("Please enter a grade level name");
+            return;
+        }
         const validName = gradeName.charAt(0).toUpperCase() + gradeName.slice(1);
-        if (!validName) toast.error("Please enter a grade level");
         try {
-            await addGradeLevel(validName);
-            toast.success("Grade level added successfully");
+            const response = await addGradeLevel(validName);
+            toast.success(response.message);
             refreshGradeLevels();
             onClose();
-        } catch (error) {
-            toast.error("Failed to add grade level");
-            refreshGradeLevels();
+        } catch (error: any) {
+            toast.error(error.message || "Something went wrong");
         }
     }
 
@@ -62,6 +64,7 @@ export function AddGradeLevel({ onClose, openModal, refreshGradeLevels }: AddGra
                             id="gradeLevel"
                             className="w-full px-3 py-2 border rounded-md"
                             value={gradeName}
+
                             onChange={(e) => setGradeName(e.target.value)}
                         />
                     </div>
@@ -81,20 +84,19 @@ export function AddGradeLevel({ onClose, openModal, refreshGradeLevels }: AddGra
 
 function GradeLevels() {
     const [openModal, setOpenModal] = useState(false);
-    const [gradeLevels, setGradeLevels] = useState<GradeLevel[]>([]);
+    const [gradeLevels, setGradeLevels] = useState<GradeLevelType[]>([]);
 
     function fetchGradeLevels() {
         const fetchGradeLevels = async () => {
             try {
                 const data = await getGradeLevels();
                 setGradeLevels(data);
-            } catch (error) {
-                toast.error("Error fetching grade levels");
+            } catch (error: any) {
+                toast.error(error.message || "Something went wrong");
             }
         };
         fetchGradeLevels();
     }
-
     useEffect(() => {
         fetchGradeLevels();
     }, []);

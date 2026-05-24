@@ -8,23 +8,26 @@ interface IGradeLevel {
 export async function getGradeLevels(req: Request, res: Response) {
     try {
         const gradeLevels = await GradeLevel.find();
-        if(!gradeLevels) {
+        if (!gradeLevels) {
             return res.status(404).json({ message: "No grade levels found" });
         }
         res.status(200).json(gradeLevels);
     }
     catch (err) {
         console.log(err);
+        return res.status(500).json({
+            message: "Internal Server Error",
+        });
     }
 }
 
 export async function addGradeLevel(req: Request, res: Response) {
     try {
         const { name } = req.body as IGradeLevel;
-        if(!name) {
+        if (!name) {
             return res.status(400).json({ message: "Please enter a grade level" });
         }
-        
+
         const existingGradeLevel = await GradeLevel.findOne({ name });
 
         if (existingGradeLevel) {
@@ -36,5 +39,19 @@ export async function addGradeLevel(req: Request, res: Response) {
     }
     catch (err) {
         console.log(err);
+        return res.status(500).json({
+            message: "Internal Server Error",
+        });
+    }
+}
+
+export async function updateGradeLevel(req: Request, res: Response) {
+    try {
+
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({
+            message: "Internal Server Error",
+        });
     }
 }

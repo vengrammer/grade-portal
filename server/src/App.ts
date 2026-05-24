@@ -2,11 +2,14 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import adminRouter from "./routes/admin.route";
-
-
+import morgan = require("morgan");
+import { errorHandler } from "./middlewares/error.middleware";
 dotenv.config();
 const app = express();
+
+app.use(morgan("dev"));//I am using morgan to log the requests in the terminal
 app.use(express.json());
+
 
 //allow cross origin meaning we can access the backend from the frontend
 const ALLOWED_CORS =  process.env.ALLOWED_CORS;
@@ -27,4 +30,5 @@ app.get("/", (req, res) => {
 //admin routes
 app.use("/api", adminRouter);
 
+app.use(errorHandler);
 export default app;

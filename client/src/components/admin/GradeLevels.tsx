@@ -3,15 +3,38 @@ import { Plus } from "lucide-react";
 import { Trash } from "lucide-react";
 import { Pencil } from "lucide-react";
 import { X } from "lucide-react";
+import { toast } from "react-toastify";
+import { useState, useEffect } from "react";
 
-import { useState } from "react";
+import { getGradeLevels, addGradeLevel } from "../../hooks/gradeLevel";
+import type { GradeLevel } from "../../types/gradeLevel";
+import { dateFormatter } from "../../utils/dateFormatter";
 
 interface AddGradeLevelProps {
     onClose: () => void;
     openModal: boolean;
+    refreshGradeLevels: () => void;
 }
 
-export function AddGradeLevel({ onClose, openModal }: AddGradeLevelProps) {
+export function AddGradeLevel({ onClose, openModal, refreshGradeLevels }: AddGradeLevelProps) {
+    
+    const [gradeName, setGradeName] = useState("");
+
+    async function onSubmit(e: React.SubmitEvent<HTMLFormElement>) {
+        e.preventDefault();
+        const validName = gradeName.charAt(0).toUpperCase() + gradeName.slice(1);
+        if (!validName) toast.error("Please enter a grade level");
+        try {
+            await addGradeLevel(validName);
+            toast.success("Grade level added successfully");
+            refreshGradeLevels();
+            onClose();
+        } catch (error) {
+            toast.error("Failed to add grade level");
+            refreshGradeLevels();
+        }
+    }
+
     if (!openModal) return null;
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -26,7 +49,7 @@ export function AddGradeLevel({ onClose, openModal }: AddGradeLevelProps) {
                     <X size={20} />
                 </button>
                 <h2 className="text-2xl font-semibold mb-4">Add Grade Level</h2>
-                <form>
+                <form onSubmit={onSubmit}>
                     <div className="mb-4">
                         <label
                             htmlFor="gradeLevel"
@@ -38,6 +61,8 @@ export function AddGradeLevel({ onClose, openModal }: AddGradeLevelProps) {
                             type="text"
                             id="gradeLevel"
                             className="w-full px-3 py-2 border rounded-md"
+                            value={gradeName}
+                            onChange={(e) => setGradeName(e.target.value)}
                         />
                     </div>
                     <div className="flex w-full items-center justify-center">
@@ -48,7 +73,6 @@ export function AddGradeLevel({ onClose, openModal }: AddGradeLevelProps) {
                             Save
                         </button>
                     </div>
-
                 </form>
             </div>
         </div>
@@ -57,6 +81,23 @@ export function AddGradeLevel({ onClose, openModal }: AddGradeLevelProps) {
 
 function GradeLevels() {
     const [openModal, setOpenModal] = useState(false);
+    const [gradeLevels, setGradeLevels] = useState<GradeLevel[]>([]);
+
+    function fetchGradeLevels() {
+        const fetchGradeLevels = async () => {
+            try {
+                const data = await getGradeLevels();
+                setGradeLevels(data);
+            } catch (error) {
+                toast.error("Error fetching grade levels");
+            }
+        };
+        fetchGradeLevels();
+    }
+
+    useEffect(() => {
+        fetchGradeLevels();
+    }, []);
 
     return (
         <div className="flex flex-col flex-1 min-h-0 w-full p-4">
@@ -65,8 +106,8 @@ function GradeLevels() {
                     Grade Levels
                 </h1>
                 <button
-                onClick={() => setOpenModal(true)}
-                 className="flex items-center gap-2 px-4 py-2 rounded-xl text-white bg-[#055bfa] hover:bg-blue-700 transition">
+                    onClick={() => setOpenModal(true)}
+                    className="flex items-center gap-2 px-4 py-2 rounded-xl text-white bg-[#055bfa] hover:bg-blue-700 transition">
                     <Plus size={20} />
                     Grade Level
                 </button>
@@ -80,12 +121,12 @@ function GradeLevels() {
                     <div className="text-center">Actions</div>
                 </div>
                 <div className="flex-1 min-h-0 overflow-y-auto ">
-                    <div className="grid grid-cols-[80px_1fr_1fr_1fr_120px] items-center px-4 py-3 border-b hover:bg-[#b8bbbd] transition">
-                        <div>1</div>
-                        <div>Grade 1</div>
-                        <div>July 20, 2023</div>
-                        <div>July 20, 2023</div>
-                        <div className="flex items-center justify-center gap-4">
+                    {gradeLevels.length === 0 ? (<div className="flex items-center justify-center h-full">No grade levels found</div>) : gradeLevels.map((g, index) => (<div key={g._id} className="grid grid-cols-[80px_1fr_1fr_1fr_120px] items-center px-4 py-3 border-b hover:bg-[#b8bbbd] transition">
+                        <div>{index + 1}</div>
+                        <div>{g.name}</div>
+                        <div>{dateFormatter(g.createdAt)}</div>
+                        <div>{dateFormatter(g.updatedAt)}</div>
+                        <div className="flex items-center justify-center gap-2">
                             <button className="bg-blue-600 p-2 rounded text-white hover:bg-blue-800">
                                 <Pencil size={20} />
                             </button>
@@ -93,10 +134,10 @@ function GradeLevels() {
                                 <Trash size={20} />
                             </button>
                         </div>
-                    </div>
+                    </div>))}
                 </div>
             </div>
-            {openModal && <AddGradeLevel openModal={openModal} onClose={() => setOpenModal(false)} />}
+            {openModal && <AddGradeLevel openModal={openModal} onClose={() => setOpenModal(false)} refreshGradeLevels={fetchGradeLevels} />}
         </div>
     )
 }

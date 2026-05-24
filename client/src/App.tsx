@@ -6,6 +6,9 @@ import LandingPageLayout from "./layout/LandingPageLayout"
 import { Navigate } from "react-router-dom"
 import AdminRouter from "./routers/AdminRouter"
 import TeacherRouter from "./routers/TeacherRouter"
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer } from "react-toastify";
+
 function App() {
   return (
     <BrowserRouter>
@@ -17,6 +20,15 @@ function App() {
         <Route path="/admin/*" element={<AdminRouter />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
+      <ToastContainer
+          position="bottom-right"
+          autoClose={4000}
+          newestOnTop={false}
+          closeOnClick
+          pauseOnHover
+          draggable
+          theme="colored"
+        />
     </BrowserRouter>
   )
 }

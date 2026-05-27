@@ -5,24 +5,26 @@ import { Pencil } from "lucide-react";
 import { toast } from "react-toastify";
 import { useState, useEffect } from "react";
 
-
-import { getGradingPeriods } from "../../hooks/gradingPeriods";
 import { dateFormatter } from "../../utils/dateFormatter";
-import type { GradingPeriodType } from "../../types/gradingPeriod.type";
+import type { TeacherType } from "../../types/user.type";
+
+import AddNewAccountModal from "../AddNewAccountModal";
+import { getTeachers } from "../../hooks/user";
 
 function Teachers() {
-    const [gradingPeriod, setGradingPeriod] = useState<GradingPeriodType[]>([]);
+    const [teachers, setTeachers] = useState<TeacherType[]>([]);
+    const [openModal, setOpenModal] = useState(false);
 
-    const fetchGradingPeriod = async () => {
+    const fetchTeachers = async () => {
         try {
-            const data = await getGradingPeriods();
-            setGradingPeriod(data);
+            const data = await getTeachers();
+            setTeachers(data);
         } catch (error: any) {
             toast.error(error.message || "Something went wrong");
         }
     }
     useEffect(() => {
-        fetchGradingPeriod();
+        fetchTeachers();
     }, []);
 
     return (
@@ -32,7 +34,8 @@ function Teachers() {
                     Teachers
                 </h1>
                 <button
-                    className="flex items-center gap-2 px-4 py-2 rounded-xl text-white bg-[#055bfa] hover:bg-blue-700 transition">
+                    onClick={() => setOpenModal(true)}
+                    className="cursor-pointer hover:scale-110 transform transition-transform duration-200 flex items-center gap-2 px-4 py-2 rounded-xl text-white bg-[#055bfa] hover:bg-blue-700">
                     <Plus size={20} />
                     Teacher
                 </button>
@@ -50,13 +53,13 @@ function Teachers() {
                     <div>Actions</div>
                 </div>
                 <div className="flex-1 min-h-0 overflow-y-auto ">
-                    {gradingPeriod.length === 0 ? (<div className="flex items-center justify-center h-full">No Grading Period</div>) : gradingPeriod.map((g, index) => (<div key={g._id} className="grid grid-cols-[80px_1fr_1fr_1fr_1fr_1fr_100px] items-center px-4 py-3 border-b hover:bg-[#b8bbbd] transition">
+                    {teachers.length === 0 ? (<div className="flex items-center justify-center h-full">No Teachers Found</div>) : teachers.map((t, index) => (<div key={t._id} className="grid grid-cols-[80px_1fr_1fr_1fr_1fr_1fr_100px] items-center px-4 py-3 border-b hover:bg-[#b8bbbd] transition">
                         <div>{index + 1}</div>
-                        <div>{g.name}</div>
-                        <div>asasas</div>
-                        <div>asdasas</div>
-                        <div>{dateFormatter(g.createdAt)}</div>
-                        <div>{dateFormatter(g.updatedAt)}</div>
+                        <div>{t.teacher_number}</div>
+                        <div>{t.first_name} {t.last_name} {t.middle_name}</div>
+                        <div>{t.is_active ? "Yes" : "No"}</div>
+                        <div>{dateFormatter(t.createdAt)}</div>
+                        <div>{dateFormatter(t.updatedAt)}</div>
                         <div className="flex items-center justify-center gap-1.5">
                             <button className="cursor-pointer bg-green-600 p-1 rounded text-white hover:bg-green-800 hover:scale-150 transition-transform duration-200 ease-in-out">
                                 <Eye size={20} />
@@ -71,6 +74,15 @@ function Teachers() {
                     </div>))}
                 </div>
             </div>
+
+            {openModal
+                &&
+                <AddNewAccountModal
+                    roleAccountToAdd="teacher"
+                    openModal={openModal}
+                    setOpenModal={setOpenModal}
+                    refreshAccounts={fetchTeachers}
+                />}
         </div>
     )
 }

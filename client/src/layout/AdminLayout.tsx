@@ -10,24 +10,38 @@ import { useNavigate } from "react-router-dom";
 const routes = [{
     name: "Dashboard",
     path: "/admin/dashboard"
-}, {
+},
+{
     name: "Users",
     path: "/admin/users"
-}, {
-    name: "Grade Levels",
-    path: "/admin/gradelevels"
-}, {
-    name: "Sections",
-    path: "/admin/sections"
-}, {
-    name: "Subjects",
-    path: "/admin/subjects"
-}, {
+},
+
+{
     name: "Teacher Assignments",
     path: "/admin/teacherassignments"
 }, {
     name: "Students",
     path: "/admin/students"
+},
+{
+    name: "Grade Levels",
+    path: "/admin/gradelevels"
+},
+{
+    name: "Sections",
+    path: "/admin/sections"
+},
+{
+    name: "Subjects",
+    path: "/admin/subjects"
+},
+{
+    name: "School Year",
+    path: "/admin/schoolyears"
+},
+{
+    name: "Teachers",
+    path: "/admin/teachers"
 }];
 
 function AdminLayout() {
@@ -37,7 +51,7 @@ function AdminLayout() {
         navigate(routes);
     }
 
-    function isActive (path: string): boolean {
+    function isActive(path: string): boolean {
         return location.pathname.includes(path)
     }
 
@@ -56,12 +70,12 @@ function AdminLayout() {
                     </div>
                     <div className="flex flex-1 flex-col gap-4 pt-10">
                         {routes.map((r) => {
-                            return(
-                               <button 
-                                    key={r.name} 
-                                    className={isActive(r.path) ? 
-                                    "bg-[#10078a88] text-white p-2 rounded-xl border border-[#aefe02] underline " : 
-                                    "bg-[#10078a88] text-white p-2 rounded-xl }"} 
+                            return (
+                                <button
+                                    key={r.name}
+                                    className={isActive(r.path) ?
+                                        "bg-[#10078a88] text-white p-2 rounded-xl border border-[#aefe02] underline " :
+                                        "bg-[#10078a88] text-white p-2 rounded-xl }"}
                                     onClick={() => handleNavigate(r.path)}>{r.name}</button>
                             )
                         })}

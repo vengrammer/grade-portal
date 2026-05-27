@@ -28,7 +28,7 @@ export function AddSubject({ onClose, openModal, refreshSubjects }: AddSubjectPr
             return;
         }
         const validName = subjectName.trim().charAt(0).toUpperCase() + subjectName.trim().slice(1);
-        
+
         try {
             const response = await addSubjects(validName, description.trim());
             toast.success(response.message);
@@ -107,16 +107,13 @@ function Subjects() {
     const [openModal, setOpenModal] = useState(false);
     const [subjects, setSubjects] = useState<SubjectType[]>([]);
 
-    function fetchSubjects() {
-        const fetchSubjects = async () => {
-            try {
-                const data = await getSubjects();
-                setSubjects(data);
-            } catch (error: any) {
-                toast.error(error.message || "Something went wrong");
-            }
-        };
-        fetchSubjects();
+    const fetchSubjects = async () => {
+        try {
+            const data = await getSubjects();
+            setSubjects(data);
+        } catch (error: any) {
+            toast.error(error.message || "Something went wrong");
+        }
     }
     useEffect(() => {
         fetchSubjects();

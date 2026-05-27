@@ -2,6 +2,7 @@ import { Router } from "express";
 import { addGradeLevel, getGradeLevels } from "../controllers/gradelevel.controller";
 import { addSection, getSections } from "../controllers/section.controller";
 import { addSubject, getSubjects } from "../controllers/subject.controller";
+import { getSchoolyears, addSchoolYear } from "../controllers/schoolYear.controller";
 
 
 //validation middleware
@@ -21,6 +22,10 @@ adminRouter.get("/section", getSections);
 //Subject
 adminRouter.post("/subject", addSubject);
 adminRouter.get("/subject", getSubjects);
+
+//School Year
+adminRouter.post("/schoolyear", addSchoolYear);
+adminRouter.get("/schoolyear", getSchoolyears);
 
 
 export default adminRouter;

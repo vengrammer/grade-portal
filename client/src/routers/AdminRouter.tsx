@@ -6,6 +6,7 @@ import AdminDashboard from "../components/admin/AdminDashboard";
 import GradeLevels from "../components/admin/GradeLevels";
 import Sections from "../components/admin/Sections";
 import Subjects from "../components/admin/Subjects";
+import Schoolyears from "../components/admin/SchoolYears";
 
 function AdminRouter() {
     return (
@@ -16,6 +17,7 @@ function AdminRouter() {
                 <Route path="gradelevels" element={<GradeLevels/>} />
                 <Route path="sections" element={<Sections/>} />
                 <Route path="subjects" element={<Subjects/>} />
+                <Route path="schoolyears" element={<Schoolyears/>} />
             </Route>
             <Route path="*" element={<Navigate to="/admin/dashboard" replace/>} />
         </Routes>

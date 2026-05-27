@@ -25,17 +25,14 @@ export function AddGradeLevel({ onClose, openModal, refreshSections }: AddSectio
     const [sectionName, setSectionName] = useState("");
 
     //get the grade levels
-    function fetchGradeLevels() {
-        const fetchGradeLevels = async () => {
-            try {
-                const data = await getGradeLevels();
-                setGradeLevels(data);
-                refreshSections();
-            } catch (error: any) {
-                toast.error(error.message || "Something went wrong");
-            }
-        };
-        fetchGradeLevels();
+    const fetchGradeLevels = async () => {
+        try {
+            const data = await getGradeLevels();
+            setGradeLevels(data);
+            refreshSections();
+        } catch (error: any) {
+            toast.error(error.message || "Something went wrong");
+        }
     }
     useEffect(() => {
         fetchGradeLevels();

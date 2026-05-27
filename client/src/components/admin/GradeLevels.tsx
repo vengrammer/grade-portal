@@ -86,16 +86,13 @@ function GradeLevels() {
     const [openModal, setOpenModal] = useState(false);
     const [gradeLevels, setGradeLevels] = useState<GradeLevelType[]>([]);
 
-    function fetchGradeLevels() {
-        const fetchGradeLevels = async () => {
-            try {
-                const data = await getGradeLevels();
-                setGradeLevels(data);
-            } catch (error: any) {
-                toast.error(error.message || "Something went wrong");
-            }
-        };
-        fetchGradeLevels();
+    const fetchGradeLevels = async () => {
+        try {
+            const data = await getGradeLevels();
+            setGradeLevels(data);
+        } catch (error: any) {
+            toast.error(error.message || "Something went wrong");
+        }
     }
     useEffect(() => {
         fetchGradeLevels();

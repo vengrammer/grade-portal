@@ -14,6 +14,7 @@ const schoolYearSchema = new Schema<ISchoolYear>(
         },
     },
     { timestamps: true }
+    
 );
 
 schoolYearSchema.index({ school_year: 1 }, { unique: true });

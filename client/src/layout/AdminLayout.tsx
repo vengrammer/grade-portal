@@ -6,8 +6,6 @@ const routes = [
     { name: "Dashboard", path: "/admin/dashboard" },
     { name: "Enrollments", path: "/admin/enrollments" },
     { name: "Teacher Assignments", path: "/admin/teacherassignments" },
-    { name: "Students", path: "/admin/students" },
-    { name: "Teachers", path: "/admin/teachers" },
 ];
 
 const school_data = [
@@ -18,10 +16,17 @@ const school_data = [
     { name: "Grading Periods", path: "/admin/gradingperiods" },
 ];
 
+const accounts = [
+    { name: "Teachers", path: "/admin/teachers" },
+    { name: "Students", path: "/admin/students" },
+    { name: "Admins", path: "/admin/admins" },
+]
+
 function AdminLayout() {
     const navigate = useNavigate();
     const location = useLocation();
     const [openSchoolData, setOpenSchoolData] = useState(false);
+    const [openAccounts, setOpenAccounts] = useState(false);
 
     function handleNavigate(path: string) {
         navigate(path);
@@ -64,6 +69,40 @@ function AdminLayout() {
                         ))}
                     </div>
 
+                    {/* Accounts */}
+                    <div className="flex flex-col gap-2">
+                        <button
+                            onClick={() => setOpenAccounts(!openAccounts)}
+                            className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-white/10 transition"
+                        >
+                            <span className="text-xs uppercase text-white/60">
+                                Accounts
+                            </span>
+                            <ChevronDown
+                                size={18}
+                                className={`transition ${openAccounts ? "rotate-180" : ""}`}
+                            />
+                        </button>
+
+                        {openAccounts && (
+                            <div className="flex flex-col gap-1 pl-2">
+                                {accounts.map((s) => (
+                                    <button
+                                        key={s.name}
+                                        onClick={() => handleNavigate(s.path)}
+                                        className={`text-left px-3 py-2 rounded-lg text-sm transition ${isActive(s.path)
+                                            ? "bg-white/20 border border-[#aefe02]"
+                                            : "hover:bg-white/10"
+                                            }`}
+                                    >
+                                        {s.name}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                    
+                    {/* School Data */}
                     <div className="flex flex-col gap-2">
                         <button
                             onClick={() => setOpenSchoolData(!openSchoolData)}

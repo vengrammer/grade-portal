@@ -10,7 +10,6 @@ import { getGradingPeriods } from "../../hooks/gradingPeriods";
 import { dateFormatter } from "../../utils/dateFormatter";
 import type { GradingPeriodType } from "../../types/gradingPeriod.type";
 
-
 function Teachers() {
     const [gradingPeriod, setGradingPeriod] = useState<GradingPeriodType[]>([]);
 

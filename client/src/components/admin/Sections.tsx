@@ -12,7 +12,7 @@ import { getGradeLevels } from "../../hooks/gradeLevel";
 import { addSection } from "../../hooks/section";
 import { getSections } from "../../hooks/section";
 
-
+import { motion } from "motion/react"
 interface AddSectionProps {
     onClose: () => void;
     openModal: boolean;
@@ -161,8 +161,14 @@ function Sections() {
                     Section
                 </button>
             </div>
-            <div className="flex flex-col flex-1 min-h-0 w-full border rounded-2xl bg-white">
-                <div className="grid grid-cols-[80px_1fr_1fr_1fr_1fr_80px] bg-gray-100 border-b px-4 rounded-t-2xl py-3 font-semibold text-[#030ff3]">
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2  }}
+                className="flex flex-col flex-1 min-h-0 w-full border rounded-2xl bg-white">
+                <div
+
+                    className="grid grid-cols-[80px_1fr_1fr_1fr_1fr_80px] bg-gray-100 border-b px-4 rounded-t-2xl py-3 font-semibold text-[#030ff3]">
                     <div>No.</div>
                     <div>Section Name</div>
                     <div>Grade Level</div>
@@ -187,7 +193,7 @@ function Sections() {
                         </div>
                     </div>))}
                 </div>
-            </div>
+            </motion.div>
             {openModal && <AddGradeLevel openModal={openModal} onClose={() => setOpenModal(false)} refreshSections={fetchSections} />}
         </div>
     )

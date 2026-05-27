@@ -5,12 +5,9 @@ interface IGradeLevel {
     name: string;
 }
 
-export async function getGradeLevels(req: Request, res: Response) {
+export async function getGradeLevels(_req: Request, res: Response) {
     try {
         const gradeLevels = await GradeLevel.find();
-        if (!gradeLevels) {
-            return res.status(404).json({ message: "No grade levels found" });
-        }
         res.status(200).json(gradeLevels);
     }
     catch (err) {

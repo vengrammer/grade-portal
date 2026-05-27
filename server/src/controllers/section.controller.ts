@@ -9,7 +9,7 @@ interface ISection {
 }
 
 
-export async function getSections(req: Request, res: Response) {
+export async function getSections(_req: Request, res: Response) {
     try {
         const sections = await Section.aggregate([
             {
@@ -28,9 +28,6 @@ export async function getSections(req: Request, res: Response) {
             }
         ]);
 
-        if (!sections) {
-            return res.status(404).json({ message: "No sections found" });
-        }
 
         res.status(200).json(sections);
     } catch (error) {

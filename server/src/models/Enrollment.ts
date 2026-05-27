@@ -36,7 +36,6 @@ const enrollmentSchema = new Schema<IEnrollment>(
 );
 
 /*
-🔥 IMPORTANT FIX:
 Prevent duplicate enrollment per year AND section
 */
 enrollmentSchema.index(

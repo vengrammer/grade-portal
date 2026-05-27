@@ -3,7 +3,7 @@ import { addGradeLevel, getGradeLevels } from "../controllers/gradelevel.control
 import { addSection, getSections } from "../controllers/section.controller";
 import { addSubject, getSubjects } from "../controllers/subject.controller";
 import { getSchoolyears, addSchoolYear } from "../controllers/schoolYear.controller";
-
+import { getGradingPeriods } from "../controllers/gradingPeriod.controller";
 
 //validation middleware
 import { sectionValidator } from "../middlewares/section.middleware";
@@ -26,6 +26,9 @@ adminRouter.get("/subject", getSubjects);
 //School Year
 adminRouter.post("/schoolyear", addSchoolYear);
 adminRouter.get("/schoolyear", getSchoolyears);
+
+//Grading Period
+adminRouter.get("/gradingperiod", getGradingPeriods);
 
 
 export default adminRouter;

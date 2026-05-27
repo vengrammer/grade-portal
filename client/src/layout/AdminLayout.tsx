@@ -1,98 +1,122 @@
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { BookOpenText, LogOut, ChevronDown } from "lucide-react";
+import { useState } from "react";
 
-import { Outlet } from "react-router-dom";
-import { BookOpenText } from "lucide-react";
-import { LogOut } from "lucide-react";
+const routes = [
+    { name: "Dashboard", path: "/admin/dashboard" },
+    { name: "Enrollments", path: "/admin/enrollments" },
+    { name: "Teacher Assignments", path: "/admin/teacherassignments" },
+    { name: "Students", path: "/admin/students" },
+    { name: "Teachers", path: "/admin/teachers" },
+];
 
-
-import { useNavigate } from "react-router-dom";
-
-
-const routes = [{
-    name: "Dashboard",
-    path: "/admin/dashboard"
-},
-{
-    name: "Users",
-    path: "/admin/users"
-},
-
-{
-    name: "Teacher Assignments",
-    path: "/admin/teacherassignments"
-}, {
-    name: "Students",
-    path: "/admin/students"
-},
-{
-    name: "Grade Levels",
-    path: "/admin/gradelevels"
-},
-{
-    name: "Sections",
-    path: "/admin/sections"
-},
-{
-    name: "Subjects",
-    path: "/admin/subjects"
-},
-{
-    name: "School Year",
-    path: "/admin/schoolyears"
-},
-{
-    name: "Teachers",
-    path: "/admin/teachers"
-}];
+const school_data = [
+    { name: "Grade Levels", path: "/admin/gradelevels" },
+    { name: "Sections", path: "/admin/sections" },
+    { name: "Subjects", path: "/admin/subjects" },
+    { name: "School Year", path: "/admin/schoolyears" },
+    { name: "Grading Periods", path: "/admin/gradingperiods" },
+];
 
 function AdminLayout() {
-
     const navigate = useNavigate();
-    function handleNavigate(routes: string) {
-        navigate(routes);
+    const location = useLocation();
+    const [openSchoolData, setOpenSchoolData] = useState(false);
+
+    function handleNavigate(path: string) {
+        navigate(path);
     }
 
-    function isActive(path: string): boolean {
-        return location.pathname.includes(path)
+    function isActive(path: string) {
+        return location.pathname === path;
     }
 
     return (
-        <div className="flex flex-col w-full h-screen">
-            <header className="flex w-full p-2 bg-[#226bfc] text-white border-b-2 border-[#aefe02]">
-                <div className="flex gap-2 items-center justify-center ">
-                    <BookOpenText size={40} className="text-[#00ff0888]" />
-                    <span className="text-2xl font-bold">Grade Portal</span>
+        <div className="flex flex-col h-screen w-full bg-gray-100">
+
+            <header className="flex items-center justify-between px-6 py-3 bg-[#226bfc] text-white border-b-4 border-[#aefe02]">
+                <div className="flex items-center gap-2">
+                    <BookOpenText size={32} className="text-[#00ff08]" />
+                    <span className="text-xl font-bold">Grade Portal</span>
                 </div>
             </header>
-            <div className="flex flex-1 min-h-0 w-full bg-gray-400">
-                <aside className="flex flex-col h-full overflow-y-auto gap-2 w-70 p-4 bg-[#226bfc] text-white">
-                    <div className="flex gap-2 items-center justify-center border-b-2 border-[#aefe02]">
-                        <span className="text-2xl  font-bold">Welcome Admin</span>
+
+            <div className="flex flex-1 min-h-0">
+                <aside className="w-72 bg-[#226bfc] text-white flex flex-col p-4 gap-4">
+
+                    <div className="border-b border-white/20 pb-3">
+                        <p className="text-lg font-bold">Welcome Admin</p>
                     </div>
-                    <div className="flex flex-1 flex-col gap-4 pt-10">
-                        {routes.map((r) => {
-                            return (
-                                <button
-                                    key={r.name}
-                                    className={isActive(r.path) ?
-                                        "bg-[#10078a88] text-white p-2 rounded-xl border border-[#aefe02] underline " :
-                                        "bg-[#10078a88] text-white p-2 rounded-xl }"}
-                                    onClick={() => handleNavigate(r.path)}>{r.name}</button>
-                            )
-                        })}
+                    <div className="flex flex-col gap-2">
+                        <p className="text-xs uppercase text-white/60">Main</p>
+
+                        {routes.map((r) => (
+                            <button
+                                key={r.name}
+                                onClick={() => handleNavigate(r.path)}
+                                className={`text-left px-3 py-2 rounded-lg transition ${isActive(r.path)
+                                    ? "bg-white/20 border border-[#aefe02] font-semibold"
+                                    : "hover:bg-white/10"
+                                    }`}
+                            >
+                                {r.name}
+                            </button>
+                        ))}
                     </div>
-                    <div className="flex w-full justify-between border p-2 rounded-2xl bg-[#25048188]">
-                        <div className="flex flex-col">
-                            <p className="truncate w-50">Gerona Reven Amazonejjjjjjjjjjjjdddddddddd</p>
-                            <p className="flex items-center justify-center text-[#02f3c7] font-bold">Admin</p>
+
+                    <div className="flex flex-col gap-2">
+                        <button
+                            onClick={() => setOpenSchoolData(!openSchoolData)}
+                            className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-white/10 transition"
+                        >
+                            <span className="text-xs uppercase text-white/60">
+                                School Data
+                            </span>
+                            <ChevronDown
+                                size={18}
+                                className={`transition ${openSchoolData ? "rotate-180" : ""}`}
+                            />
+                        </button>
+
+                        {openSchoolData && (
+                            <div className="flex flex-col gap-1 pl-2">
+                                {school_data.map((s) => (
+                                    <button
+                                        key={s.name}
+                                        onClick={() => handleNavigate(s.path)}
+                                        className={`text-left px-3 py-2 rounded-lg text-sm transition ${isActive(s.path)
+                                            ? "bg-white/20 border border-[#aefe02]"
+                                            : "hover:bg-white/10"
+                                            }`}
+                                    >
+                                        {s.name}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="mt-auto flex items-center justify-between p-3 rounded-xl bg-[#25048188] border border-white/10">
+                        <div className="min-w-0">
+                            <p className="truncate text-sm font-semibold">
+                                Gerona Reven Amazonejjjjjjjjjjjj
+                            </p>
+                            <p className="text-xs text-[#02f3c7] font-bold">Admin</p>
                         </div>
-                        <button className=" hover:scale-110 transform transition-all cursor-pointer text-[#e9e7e7] bg-[#f50a06] border font-extrabold px-2 rounded"><LogOut size={25} /></button>
+
+                        <button className="text-white hover:scale-110 transition">
+                            <LogOut size={22} />
+                        </button>
                     </div>
+
                 </aside>
-                <main className="flex flex-1 min-h-0 overflow-hidden">
+                <main className="flex-1 min-h-0 flex overflow-auto bg-white">
                     <Outlet />
                 </main>
+
             </div>
         </div>
-    )
+    );
 }
+
 export default AdminLayout;

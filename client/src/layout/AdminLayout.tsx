@@ -73,7 +73,7 @@ function AdminLayout() {
                     <div className="flex flex-col gap-2">
                         <button
                             onClick={() => setOpenAccounts(!openAccounts)}
-                            className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-white/10 transition"
+                            className="flex items-center border-b justify-between px-3 py-2 rounded-lg hover:bg-white/10 transition"
                         >
                             <span className="text-xs uppercase text-white/60">
                                 Accounts
@@ -106,7 +106,7 @@ function AdminLayout() {
                     <div className="flex flex-col gap-2">
                         <button
                             onClick={() => setOpenSchoolData(!openSchoolData)}
-                            className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-white/10 transition"
+                            className="flex items-center justify-between border-b px-3 py-2 rounded-lg hover:bg-white/10 transition"
                         >
                             <span className="text-xs uppercase text-white/60">
                                 School Data

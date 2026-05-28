@@ -2,10 +2,10 @@ import { body } from "express-validator";
 
 const nameRegex = /^[A-Za-z]+(?:[ '\-][A-Za-z]+)*$/;
 
-const validateTeacherBeforeSave = [
-    body("teacher_number")
+const validateAccountBeforeSave = [
+    body("account_number")
         .notEmpty()
-        .withMessage("Teacher number is required"),
+        .withMessage("Account number is required"),
 
     body("first_name")
         .notEmpty()
@@ -71,4 +71,4 @@ const validateTeacherBeforeSave = [
         }),
 ];
 
-export { validateTeacherBeforeSave };
+export { validateAccountBeforeSave };

@@ -12,6 +12,8 @@ import { getGradeLevels } from "../../hooks/gradeLevel";
 import { addSection } from "../../hooks/section";
 import { getSections } from "../../hooks/section";
 
+import LoadingScreen from "../LoadingScreen";
+
 import { motion } from "motion/react"
 interface AddSectionProps {
     onClose: () => void;
@@ -132,14 +134,18 @@ export function AddGradeLevel({ onClose, openModal, refreshSections }: AddSectio
 function Sections() {
     const [openModal, setOpenModal] = useState(false);
     const [sections, setSections] = useState<SectionType[]>([]);
+    const [loading, setLoading] = useState(false);
 
     function fetchSections() {
         const fetchGradeLevels = async () => {
             try {
+                setLoading(true);
                 const data = await getSections();
                 setSections(data);
             } catch (error: any) {
                 toast.error(error.message || "Something went wrong");
+            } finally {
+                setLoading(false);
             }
         };
         fetchGradeLevels();
@@ -149,7 +155,7 @@ function Sections() {
     }, []);
 
     return (
-        <div className="flex flex-col flex-1 min-h-0 w-full p-4">
+        <div className="flex relative flex-col flex-1 min-h-0 w-full p-4">
             <div className="w-full flex items-center justify-between mb-4">
                 <h1 className="text-2xl font-semibold text-[#030ff3]">
                     Sections
@@ -164,7 +170,7 @@ function Sections() {
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2  }}
+                transition={{ delay: 0.2 }}
                 className="flex flex-col flex-1 min-h-0 w-full border rounded-2xl bg-white">
                 <div
 
@@ -195,6 +201,7 @@ function Sections() {
                 </div>
             </motion.div>
             {openModal && <AddGradeLevel openModal={openModal} onClose={() => setOpenModal(false)} refreshSections={fetchSections} />}
+            {loading && <LoadingScreen loadingFor="component" />}
         </div>
     )
 }

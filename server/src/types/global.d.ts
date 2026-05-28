@@ -36,8 +36,7 @@ declare global {
         role: Role;
         is_active: boolean;
 
-        student_number?: string;
-        teacher_number?: string;
+        account_number: string;
 
         createdAt?: Date;
         updatedAt?: Date;

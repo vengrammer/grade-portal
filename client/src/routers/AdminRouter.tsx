@@ -9,13 +9,17 @@ import Subjects from "../components/admin/Subjects";
 import Schoolyears from "../components/admin/SchoolYears";
 import GradingPeriod from "../components/admin/GradingPeriod";
 import Teachers from "../components/admin/Teachers";
+import Students from "../components/admin/Students";
 function AdminRouter() {
     return (
         <Routes >
             <Route element={<AdminLayout />}>
                 <Route path="/" element={<Navigate to="/admin/dashboard" replace/>} />
                 <Route path="dashboard" element={<AdminDashboard/>} />
+
                 <Route path="teachers" element={<Teachers/>} />
+                <Route path="students" element={<Students/>} />
+
                 <Route path="gradelevels" element={<GradeLevels/>} />
                 <Route path="sections" element={<Sections/>} />
                 <Route path="subjects" element={<Subjects/>} />

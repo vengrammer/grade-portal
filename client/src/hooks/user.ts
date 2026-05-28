@@ -1,12 +1,20 @@
-import type { TeacherPayload } from "../types/user.type";
+
+import type {
+    UserPayload, UserType
+} from "../types/user.type";
 import { api } from "../utils/api";
 
-export const getTeachers = async (): Promise<TeacherPayload[]> => {
-    const response = await fetch(`${api}/teacher`, {
+type roleType = "teacher" | "student" | "admin";
+
+export const getUsersByRole = async (role: roleType): Promise<UserType[]> => {
+    const response = await fetch(`${api}/users?role=${role}`, {
         method: "GET",
         credentials: "include",
+        headers: {
+            "Content-Type": "application/json",
+        },
     });
-
+    
     // check if the content type is application/json... meaning it will not show an html error page
     const contentType = response.headers.get("content-type");
     if (!contentType || !contentType.includes("application/json")) {
@@ -20,16 +28,16 @@ export const getTeachers = async (): Promise<TeacherPayload[]> => {
     return data;
 };
 
-export const addTeacher = async (
-    teacherData: TeacherPayload
+export const addAccount = async (
+    userData: UserPayload
 ) => {
-    const response = await fetch(`${api}/teacher`, {
+    const response = await fetch(`${api}/user`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
         credentials: "include",
-        body: JSON.stringify(teacherData),
+        body: JSON.stringify(userData),
     });
 
     const contentType = response.headers.get("content-type");

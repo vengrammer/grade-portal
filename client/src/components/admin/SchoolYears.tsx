@@ -9,15 +9,21 @@ import { getSchoolyears, addSchoolYear } from "../../hooks/schoolYear";
 import type { SchoolYearType } from "../../types/schoolYear.type";
 import { dateFormatter } from "../../utils/dateFormatter";
 
+import LoadingScreen from "../LoadingScreen";
+
 
 function Schoolyears() {
     const [schoolYear, setSchoolYear] = useState<SchoolYearType[]>([]);
+    const [loading, setLoading] = useState(true);
     const fetchSchoolyears = async () => {
         try {
+            setLoading(true);
             const data = await getSchoolyears();
             setSchoolYear(data);
         } catch (error: any) {
             toast.error(error.message || "Something went wrong");
+        }finally{
+            setLoading(false);
         }
     }
 
@@ -29,17 +35,20 @@ function Schoolyears() {
     const handleAddSchoolYear = async (e: React.MouseEvent<HTMLButtonElement>) =>   {
         e.preventDefault();
         try {
+            setLoading(true);
             await addSchoolYear();
             toast.success("School year added successfully");
             fetchSchoolyears();
         } catch (error: any) {
             toast.error(error.message || "Something went wrong");
+        }finally{
+            setLoading(false);
         }
 
     }
 
     return (
-        <div className="flex flex-col flex-1 min-h-0 w-full p-4">
+        <div className="relative flex flex-col flex-1 min-h-0 w-full p-4">
             <div className="w-full flex items-center justify-between mb-4">
                 <h1 className="text-2xl font-semibold text-[#030ff3]">
                     School Years
@@ -78,6 +87,7 @@ function Schoolyears() {
                     </div>))}
                 </div>
             </div>
+            {loading && <LoadingScreen  loadingFor="component"/>}
         </div>
     )
 }

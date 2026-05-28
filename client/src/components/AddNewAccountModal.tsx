@@ -1,11 +1,12 @@
 import { X, Plus, Eye, EyeOff } from "lucide-react";
 import { useEffect, useState } from "react";
 
-import { addTeacher } from "../hooks/user";
+
 import { toast } from "react-toastify";
-import { accountnumber } from "../hooks/user";
+import { accountnumber, addAccount } from "../hooks/user";
 
 import LoadingScreen from "./LoadingScreen";
+type roleAccountToAdd = "student" | "teacher" | "admin";
 
 export interface IUser {
     first_name: string;
@@ -20,9 +21,10 @@ export interface IUser {
     password: string;
     account_number: string
     confirm_password: string
+    role: roleAccountToAdd
 }
 
-type roleAccountToAdd = "student" | "teacher" | "admin";
+
 
 interface IModal {
     roleAccountToAdd: roleAccountToAdd;
@@ -52,6 +54,7 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
         email: "",
         password: "",
         account_number: "",
+        role: roleAccountToAdd,
         confirm_password: ""
     });
 
@@ -119,6 +122,10 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
             newErrors.contact_number = "Contact number is required";
         }
 
+        if (data.contact_number.length < 11) {
+            newErrors.contact_number = "Contact number must be 11 digits";
+        }
+
         if (!data.password) {
             newErrors.password = "Password is required";
         } else if (data.password.length < 6) {
@@ -145,21 +152,25 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
             setErrors(validationErrors);
             return;
         }
-        if (roleAccountToAdd === "teacher") {
+
+        const formatName = (value: string) => {
+            return value.trim().charAt(0).toUpperCase() + value.trim().slice(1).toLowerCase();
+        };
+        
             try {
-                await addTeacher({
-                    teacher_number: formData.account_number.trim(),
-                    first_name: formData.first_name.trim(),
-                    last_name: formData.last_name.trim(),
-                    middle_name: formData.middle_name.trim(),
-                    gender: formData.gender.trim(),
+                await addAccount({
+                    account_number: formData.account_number.trim(),
+                    first_name: formatName(formData.first_name),
+                    last_name: formatName(formData.last_name),
+                    middle_name: formatName(formData.middle_name),
+                    gender: formData.gender.trim().toLowerCase(),
                     address: formData.address.trim(),
                     birth_date: formData.birth_date,
                     contact_number: formData.contact_number.trim(),
                     email: formData.email.trim(),
                     password: formData.password,
                     confirm_password: formData.confirm_password,
-
+                    role: roleAccountToAdd,
                     ...(formData.profile_picture && {
                         profile_picture: formData.profile_picture,
                     }),
@@ -180,7 +191,6 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
                 }
                 toast.error(error.message || "Something went wrong");
             }
-        }
     }
 
     const [preview, setPreview] = useState<string | null>(null);
@@ -231,6 +241,7 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
                                     value={formData.account_number}
                                     onChange={handleChange}
                                     readOnly
+                                    disabled
                                     name="account_number"
                                     type="text"
                                     id="account_number"
@@ -531,8 +542,9 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
                                         Confirm Password
                                     </label>
                                     <div className="flex-1 flex gap-2 ">
-                                        <div className="flex-1">
-                                            <input
+                                        <div className="flex-1 flex-col">
+                                            <div className="flex-1 flex gap-2">
+                                                <input
                                                 type={viewPassword ? "text" : "password"}
                                                 value={formData.confirm_password}
                                                 onChange={handleChange}
@@ -542,6 +554,14 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
                                                 required
                                                 className="w-full px-3 py-2 border rounded-md"
                                             />
+                                            <button
+                                                type="button"
+                                                onClick={() => setViewPassword(!viewPassword)}
+                                                className="border rounded p-0.5 cursor-pointer">
+                                                {viewPassword ? <EyeOff size={30} /> : <Eye size={30} />}
+                                            </button> 
+                                            </div>
+                                           
                                             {errors.confirm_password && (
                                                 <p className="text-red-500 text-sm mt-1">
                                                     {errors.confirm_password}
@@ -549,12 +569,7 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
                                             )}
                                         </div>
 
-                                        <button
-                                            type="button"
-                                            onClick={() => setViewPassword(!viewPassword)}
-                                            className="border rounded p-0.5 cursor-pointer">
-                                            {viewPassword ? <EyeOff size={30} /> : <Eye size={30} />}
-                                        </button>
+
                                     </div>
                                 </div>
                             </div>

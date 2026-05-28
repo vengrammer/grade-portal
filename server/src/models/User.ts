@@ -30,7 +30,7 @@ const userSchema = new Schema<IUser>(
             type: String,
             trim: true,
             required: true,
-        }, 
+        },
 
         birth_date: {
             type: Date,
@@ -61,17 +61,7 @@ const userSchema = new Schema<IUser>(
             default: true,
         },
 
-        student_number: {
-            type: String,
-            unique: true,
-            sparse: true,
-        },
-
-        teacher_number: {
-            type: String,
-            unique: true,
-            sparse: true,
-        },
+        account_number: { type: String, unique: true, required: true }
     },
     { timestamps: true }
 );

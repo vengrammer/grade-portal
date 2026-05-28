@@ -11,14 +11,14 @@ import type { UserType } from "../../types/user.type";
 import AddNewAccountModal from "../AddNewAccountModal";
 import { getUsersByRole } from "../../hooks/user";
 
-function Teachers() {
-    const [teachers, setTeachers] = useState<UserType[]>([]);
+function Students() {
+    const [students, setStudents] = useState<UserType[]>([]);
     const [openModal, setOpenModal] = useState(false);
 
     const fetchTeachers = async () => {
         try {
-            const data = await getUsersByRole("teacher");
-            setTeachers(data);
+            const data = await getUsersByRole("student");;
+            setStudents(data);
         } catch (error: any) {
             toast.error(error.message || "Something went wrong");
         }
@@ -31,7 +31,7 @@ function Teachers() {
         <div className="flex flex-col flex-1 min-h-0 w-full p-4">
             <div className="w-full flex items-center justify-between mb-4">
                 <h1 className="text-2xl font-semibold text-[#030ff3]">
-                    Teachers
+                    Students
                 </h1>
                 <button
                     onClick={() => setOpenModal(true)}
@@ -53,13 +53,13 @@ function Teachers() {
                     <div>Actions</div>
                 </div>
                 <div className="flex-1 min-h-0 overflow-y-auto ">
-                    {teachers.length === 0 ? (<div className="flex items-center justify-center h-full">No Teachers Found</div>) : teachers.map((t, index) => (<div key={t._id} className="grid grid-cols-[80px_1fr_1fr_1fr_1fr_1fr_100px] items-center px-4 py-3 border-b hover:bg-[#b8bbbd] transition">
+                    {students.length === 0 ? (<div className="flex items-center justify-center h-full">No Student Found</div>) : students.map((s, index) => (<div key={s._id} className="grid grid-cols-[80px_1fr_1fr_1fr_1fr_1fr_100px] items-center px-4 py-3 border-b hover:bg-[#b8bbbd] transition">
                         <div>{index + 1}</div>
-                        <div>{t.account_number}</div>
-                        <div>{t.first_name} {t.last_name} {t.middle_name}</div>
-                        <div>{t.is_active ? "Yes" : "No"}</div>
-                        <div>{dateFormatter(t.createdAt)}</div>
-                        <div>{dateFormatter(t.updatedAt)}</div>
+                        <div>{s.student_number}</div>
+                        <div>{s.first_name} {s.last_name} {s.middle_name}</div>
+                        <div>{s.is_active ? "Yes" : "No"}</div>
+                        <div>{dateFormatter(s.createdAt)}</div>
+                        <div>{dateFormatter(s.updatedAt)}</div>
                         <div className="flex items-center justify-center gap-1.5">
                             <button className="cursor-pointer bg-green-600 p-1 rounded text-white hover:bg-green-800 hover:scale-150 transition-transform duration-200 ease-in-out">
                                 <Eye size={20} />
@@ -86,4 +86,4 @@ function Teachers() {
         </div>
     )
 }
-export default Teachers;
+export default Students;

@@ -10,6 +10,8 @@ import { getSubjects, addSubjects } from "../../hooks/subjects";
 import type { SubjectType } from "../../types/subjects.type";
 import { dateFormatter } from "../../utils/dateFormatter";
 
+import LoadingScreen from "../LoadingScreen";
+
 interface AddSubjectProps {
     onClose: () => void;
     openModal: boolean;
@@ -106,13 +108,17 @@ export function AddSubject({ onClose, openModal, refreshSubjects }: AddSubjectPr
 function Subjects() {
     const [openModal, setOpenModal] = useState(false);
     const [subjects, setSubjects] = useState<SubjectType[]>([]);
+    const [loading, setLoading] = useState(false);
 
     const fetchSubjects = async () => {
         try {
+            setLoading(true);
             const data = await getSubjects();
             setSubjects(data);
         } catch (error: any) {
             toast.error(error.message || "Something went wrong");
+        }finally{
+            setLoading(false);
         }
     }
     useEffect(() => {
@@ -120,7 +126,7 @@ function Subjects() {
     }, []);
 
     return (
-        <div className="flex flex-col flex-1 min-h-0 w-full p-4">
+        <div className="relative flex flex-col flex-1 min-h-0 w-full p-4">
             <div className="w-full flex items-center justify-between mb-4">
                 <h1 className="text-2xl font-semibold text-[#030ff3]">
                     Subjects
@@ -160,6 +166,7 @@ function Subjects() {
                 </div>
             </div>
             {openModal && <AddSubject openModal={openModal} onClose={() => setOpenModal(false)} refreshSubjects={fetchSubjects} />}
+            {loading && <LoadingScreen loadingFor="component" />}
         </div>
     )
 }

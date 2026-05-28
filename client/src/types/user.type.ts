@@ -1,19 +1,14 @@
 
-export type TeacherType = {
-    _id: string;
-    first_name: string;
-    last_name: string;
-    middle_name?: string;
-    gender: string;
-    contact_number: string;
-    address: string;
-    birth_date: string;
-    profile_picture: string;
-    email: string;
-    teacher_number?: string;
-    student_number?: string;
-    role: string;
-    is_active: boolean;
-    createdAt: string;
-    updatedAt: string;
+export interface TeacherPayload {
+  teacher_number: string;
+  first_name: string;
+  last_name: string;
+  middle_name: string;
+  gender: string;
+  address: string;
+  birth_date: string;
+  contact_number: string;
+  email: string;
+  password: string;
+  profile_picture?: string;
 }

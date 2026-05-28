@@ -60,7 +60,7 @@ const validateTeacherBeforeSave = [
         .isLength({ min: 6 })
         .withMessage("Password must be at least 6 characters long"),
 
-    body("password_confirmation")
+    body("confirm_password")
         .notEmpty()
         .withMessage("Password confirmation is required")
         .custom((value, { req }) => {

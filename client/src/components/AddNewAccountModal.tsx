@@ -1,10 +1,13 @@
-import { X, Plus } from "lucide-react";
+import { X, Plus, Eye, EyeOff } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { addTeacher } from "../hooks/user";
 import { toast } from "react-toastify";
 import { accountnumber } from "../hooks/user";
 
+import LoadingScreen from "./LoadingScreen";
+
+//sample data
 // {
 //   "teacher_number": "TCH12345",
 //   "first_name": "Juan",
@@ -21,17 +24,14 @@ import { accountnumber } from "../hooks/user";
 // }
 
 interface IUser {
-
     first_name: string;
     last_name: string;
     middle_name: string;
-
     contact_number: string;
     address: string;
     birth_date: string;
     profile_picture?: string;
     gender: string;
-
     email: string;
     password: string;
     account_number: string
@@ -48,8 +48,9 @@ interface IModal {
 }
 
 function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal, refreshAccounts }: IModal) {
-
-    //get the account number 
+    const [isLoading, setIsLoading] = useState(false);
+    const [viewPassword, setViewPassword] = useState(false);
+    const onClose = () => setOpenModal(false);
     const [formData, setFormData] = useState<IUser>({
         first_name: "",
         last_name: "",
@@ -69,6 +70,7 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
 
     const generateAccountNumber = async () => {
         try {
+            setIsLoading(true);
             const response = await accountnumber();
             if (!response) {
                 toast.error("Failed to generate account number");
@@ -81,6 +83,8 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
 
         } catch (error: any) {
             toast.error(error.message || "Something went wrong");
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -93,16 +97,9 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
         setFormData({ ...formData, [e.target.name]: e.target.value });
     }
 
-    const onClose = () => setOpenModal(false);
-
-    console.log("account_number", formData.account_number);
 
     const handleCreateAccount = async (e: React.SubmitEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (formData.profile_picture === "") {
-            toast.error("Please upload a profile picture");
-            return
-        }
 
         if (formData.password !== formData.confirm_password) {
             toast.error("Passwords do not match");
@@ -111,19 +108,22 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
 
         if (roleAccountToAdd === "teacher") {
             try {
-                await addTeacher(
-                    formData.account_number,
-                    formData.first_name,
-                    formData.last_name,
-                    formData.middle_name,
-                    formData.gender,
-                    formData.address,
-                    formData.birth_date,
-                    formData.contact_number,
-                    formData.email,
-                    formData.profile_picture ="",
-                    formData.password
-                );
+                await addTeacher({
+                    teacher_number: formData.account_number.trim(),
+                    first_name: formData.first_name.trim(),
+                    last_name: formData.last_name.trim(),
+                    middle_name: formData.middle_name.trim(),
+                    gender: formData.gender.trim(),
+                    address: formData.address.trim(),
+                    birth_date: formData.birth_date,
+                    contact_number: formData.contact_number.trim(),
+                    email: formData.email.trim(),
+                    password: formData.password,
+
+                    ...(formData.profile_picture && {
+                        profile_picture: formData.profile_picture,
+                    }),
+                });
 
                 toast.success("Account created successfully");
                 refreshAccounts();
@@ -132,8 +132,6 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
                 toast.error(error.message || "Something went wrong");
             }
         }
-
-
     }
 
     const [preview, setPreview] = useState<string | null>(null);
@@ -143,7 +141,13 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
         if (!file) return;
 
         const imageUrl = URL.createObjectURL(file);
+
         setPreview(imageUrl);
+
+        setFormData((prev) => ({
+            ...prev,
+            profile_picture: imageUrl,
+        }));
     };
 
     const handleRemoveImage = (e: React.MouseEvent) => {
@@ -246,6 +250,7 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
                                         onChange={handleChange}
                                         id="first_name"
                                         name="first_name"
+                                        required
                                         className="w-full px-3 py-2 border rounded-md"
                                     />
                                 </div>
@@ -262,6 +267,7 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
                                         type="text"
                                         value={formData.middle_name}
                                         onChange={handleChange}
+                                        required
                                         id="middle_name"
                                         name="middle_name"
                                         className="w-full px-3 py-2 border rounded-md"
@@ -282,6 +288,7 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
                                         onChange={handleChange}
                                         id="last_name"
                                         name="last_name"
+                                        required
                                         className="w-full px-3 py-2 border rounded-md"
                                     />
                                 </div>
@@ -303,6 +310,7 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
                                         onChange={handleChange}
                                         id="birth_date"
                                         name="birth_date"
+                                        required
                                         className="w-full px-3 py-2 border rounded-md"
                                     />
                                 </div>
@@ -321,6 +329,7 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
                                         onChange={handleChange}
                                         id="gender"
                                         name="gender"
+                                        required
                                         className="w-full px-3 py-2 border rounded-md"
                                     />
                                 </div>
@@ -339,6 +348,7 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
                                         onChange={handleChange}
                                         id="contact_number"
                                         name="contact_number"
+                                        required
                                         className="w-full px-3 py-2 border rounded-md"
                                     />
                                 </div>
@@ -363,6 +373,7 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
                                         onChange={handleChange}
                                         id="address"
                                         name="address"
+                                        required
                                         className="w-full px-3 py-2 border rounded-md"
                                     />
                                 </div>
@@ -376,10 +387,11 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
                                         Email address
                                     </label>
                                     <input
-                                        type="text"
+                                        type="email"
                                         value={formData.email}
                                         onChange={handleChange}
                                         id="email"
+                                        required
                                         name="email"
                                         className="w-full px-3 py-2 border rounded-md"
                                     />
@@ -400,11 +412,13 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
                                         Password
                                     </label>
                                     <input
-                                        type="text"
+                                        type="password"
                                         value={formData.password}
                                         onChange={handleChange}
                                         id="password"
                                         name="password"
+                                        min={6}
+                                        required
                                         className="w-full px-3 py-2 border rounded-md"
                                     />
                                 </div>
@@ -417,14 +431,24 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
                                     >
                                         Confirm Password
                                     </label>
-                                    <input
-                                        type="text"
-                                        value={formData.confirm_password}
-                                        onChange={handleChange}
-                                        id="confirm_password"
-                                        name="confirm_password"
-                                        className="w-full px-3 py-2 border rounded-md"
-                                    />
+                                    <div className="flex-1 flex gap-2 ">
+                                        <input
+                                            type={viewPassword ? "text" : "password"}
+                                            value={formData.confirm_password}
+                                            onChange={handleChange}
+                                            id="confirm_password"
+                                            name="confirm_password"
+                                            min={6}
+                                            required
+                                            className="w-full px-3 py-2 border rounded-md"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setViewPassword(!viewPassword)}
+                                            className="border rounded p-0.5 cursor-pointer">
+                                            {viewPassword ? <EyeOff size={30} /> : <Eye size={30} />}
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -432,13 +456,15 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
                     <div className="flex w-full items-center justify-center pt-5">
                         <button
                             type="submit"
-                            className="px-4 py-2 bg-blue-500  text-white rounded-md hover:bg-blue-600"
+                            disabled={isLoading}
+                            className="px-15 py-2 bg-blue-500  text-white rounded-md hover:bg-blue-600"
                         >
-                            Create Account
+                            {isLoading ? "Creating account..." : "Submit"}
                         </button>
                     </div>
                 </form>
             </div>
+            {isLoading && <LoadingScreen loadingFor="system" />}
         </div>
     )
 }

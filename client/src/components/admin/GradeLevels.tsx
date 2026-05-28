@@ -10,6 +10,8 @@ import { getGradeLevels, addGradeLevel } from "../../hooks/gradeLevel";
 import type { GradeLevelType } from "../../types/gradeLevel.type";
 import { dateFormatter } from "../../utils/dateFormatter";
 
+import LoadingScreen from "../LoadingScreen";
+
 interface AddGradeLevelProps {
     onClose: () => void;
     openModal: boolean;
@@ -19,6 +21,7 @@ interface AddGradeLevelProps {
 export function AddGradeLevel({ onClose, openModal, refreshGradeLevels }: AddGradeLevelProps) {
 
     const [gradeName, setGradeName] = useState("");
+    const [loading, setLoading] = useState(false);
 
     async function onSubmit(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -27,13 +30,21 @@ export function AddGradeLevel({ onClose, openModal, refreshGradeLevels }: AddGra
             return;
         }
         const validName = gradeName.charAt(0).toUpperCase() + gradeName.slice(1);
+
         try {
+            setLoading(true);
+
             const response = await addGradeLevel(validName);
+
             toast.success(response.message);
+
             refreshGradeLevels();
+
             onClose();
         } catch (error: any) {
             toast.error(error.message || "Something went wrong");
+        } finally {
+            setLoading(false);
         }
     }
 
@@ -64,16 +75,16 @@ export function AddGradeLevel({ onClose, openModal, refreshGradeLevels }: AddGra
                             id="gradeLevel"
                             className="w-full px-3 py-2 border rounded-md"
                             value={gradeName}
-
                             onChange={(e) => setGradeName(e.target.value)}
                         />
                     </div>
                     <div className="flex w-full items-center justify-center">
                         <button
                             type="submit"
+                            disabled={loading}
                             className="px-4 py-2 bg-blue-500  text-white rounded-md hover:bg-blue-600"
                         >
-                            Save
+                            {loading ? "Saving..." : "Save"}
                         </button>
                     </div>
                 </form>
@@ -85,13 +96,18 @@ export function AddGradeLevel({ onClose, openModal, refreshGradeLevels }: AddGra
 function GradeLevels() {
     const [openModal, setOpenModal] = useState(false);
     const [gradeLevels, setGradeLevels] = useState<GradeLevelType[]>([]);
+    const [loading, setLoading] = useState(false);
 
     const fetchGradeLevels = async () => {
+        setLoading(true);
         try {
             const data = await getGradeLevels();
             setGradeLevels(data);
+            setLoading(false);
         } catch (error: any) {
             toast.error(error.message || "Something went wrong");
+        }finally {
+            setLoading(false);
         }
     }
     useEffect(() => {
@@ -99,7 +115,7 @@ function GradeLevels() {
     }, []);
 
     return (
-        <div className="flex flex-col flex-1 min-h-0 w-full p-4">
+        <div className="flex relative flex-col flex-1 min-h-0 w-full p-4">
             <div className="w-full flex items-center justify-between mb-4">
                 <h1 className="text-2xl font-semibold text-[#030ff3]">
                     Grade Levels
@@ -137,6 +153,7 @@ function GradeLevels() {
                 </div>
             </div>
             {openModal && <AddGradeLevel openModal={openModal} onClose={() => setOpenModal(false)} refreshGradeLevels={fetchGradeLevels} />}
+            {loading && <LoadingScreen loadingFor="component"/>}
         </div>
     )
 }

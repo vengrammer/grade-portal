@@ -15,6 +15,34 @@ const userSchema = new Schema<IUser>(
             trim: true,
         },
 
+        profile_picture: {
+            type: String,
+            trim: true,
+        },
+
+        address: {
+            type: String,
+            trim: true,
+            required: true,
+        },
+
+        contact_number: {
+            type: String,
+            trim: true,
+            required: true,
+        }, 
+
+        birth_date: {
+            type: Date,
+            required: true,
+        },
+
+        gender: {
+            type: String,
+            enum: ["male", "female"],
+            required: true,
+        },
+
         password: {
             type: String,
             required: true,

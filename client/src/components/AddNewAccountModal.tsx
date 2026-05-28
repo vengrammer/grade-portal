@@ -1,4 +1,4 @@
-import { X } from "lucide-react";
+import { X, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { addTeacher } from "../hooks/user";
@@ -24,7 +24,6 @@ interface IModal {
 }
 
 function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal, refreshAccounts }: IModal) {
-
 
     //get the account number 
     const [formData, setFormData] = useState<IUser>({
@@ -70,7 +69,7 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
 
     console.log("account_number", formData.account_number);
 
-    const handleCreateAccount = async (e: React.FormEvent<HTMLFormElement>) => {
+    const handleCreateAccount = async (e: React.SubmitEvent<HTMLFormElement>) => {
         e.preventDefault();
         try {
             await addTeacher(formData.account_number,
@@ -87,6 +86,21 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
             toast.error(error.message || "Something went wrong");
         }
     }
+
+    const [preview, setPreview] = useState<string | null>(null);
+
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const imageUrl = URL.createObjectURL(file);
+        setPreview(imageUrl);
+    };
+
+    const handleRemoveImage = (e: React.MouseEvent) => {
+        e.preventDefault();
+        setPreview(null);
+    };
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
             <div
@@ -98,29 +112,74 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
                 >
                     <X size={20} onClick={onClose} />
                 </button>
-                <h2 className="text-2xl font-semibold mb-4">{`Add New ${roleAccountToAdd}`}</h2>
+                <h2 className="text-2xl font-semibold mb-3">{`Add New ${roleAccountToAdd}`}</h2>
                 <form onSubmit={handleCreateAccount} className="flex flex-col gap-4">
-                    <div className="flex w-full flex-col items-center justify-center">
+                    <div className="flex w-full flex-col items-center justify-between">
+
                         <div className="w-full flex  border-b mb-2"><p>Account Number</p></div>
-                        <div className="flex flex-col max-w-sm w-full items-center justify-center">
-                            <label
-                                htmlFor="firstName"
-                                className="block text-gray-700 font-semibold "
-                            >
-                                Account Number(Auto Generated)
-                            </label>
-                            <input
-                                value={formData.account_number}
-                                onChange={handleChange}
-                                readOnly
-                                name="account_number"
-                                type="text"
-                                id="firstName"
-                                className="w-full px-3 py-2 border rounded-md items-center justify-items-center flex"
-                            />
+                        <div className="flex flex-1  w-full items-center justify-between gap-5 ">
+                            <div className="flex-1">
+                                <label
+                                    htmlFor="firstName"
+                                    className="block text-gray-700 font-semibold "
+                                >
+                                    Account Number(Auto Generated)
+                                </label>
+                                <input
+                                    value={formData.account_number}
+                                    onChange={handleChange}
+                                    readOnly
+                                    name="account_number"
+                                    type="text"
+                                    id="firstName"
+                                    className="w-full px-3 py-2 border rounded-md items-center justify-items-center flex"
+                                />
+                            </div>
+                            {/* Profile Picture*/}
+                            <div className="flex-1 relative">
+                                <label className="block text-gray-700 font-semibold mb-2">
+                                    Profile Picture
+                                </label>
+                                <div>
+                                    <label className="cursor-pointer">
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            className="hidden"
+                                            onChange={handleImageChange}
+                                        />
+
+                                        {/* Avatar Box */}
+                                        <div className="h-40 w-40  border-2 border-dashed rounded-full overflow-hidden flex items-center justify-center bg-gray-50 hover:border-blue-500 transition">
+
+                                            {preview ? (
+                                                <img
+                                                    src={preview}
+                                                    alt="Profile Preview"
+                                                    className="h-full w-full object-cover"
+                                                />
+                                            ) : (
+                                                <div className="flex flex-col items-center justify-center text-gray-500">
+                                                    <Plus className="w-8 h-8" />
+                                                    <p className="text-xs mt-1">Add Photo</p>
+                                                </div>
+                                            )}
+                                        </div>
+                                        {preview && (
+                                            <button
+                                                onClick={handleRemoveImage}
+
+                                                className="absolute cursor-pointer top-10 right-65 bg-gray-400 font-bold  p-2 rounded-full shadow hover:bg-red-500 transition"
+                                            >
+                                                <X size={16} />
+                                            </button>
+                                        )}
+                                    </label>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div className="flex w-full flex-col">
+                    <div className="flex w-full flex-col gap-4">
                         <div className="w-full flex items-start border-b mb-2"><p>Basic info</p></div>
                         {/* Basic info*/}
                         <div className="flex lg:flex-row flex-col  w-full gap-4">
@@ -170,6 +229,56 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
                                 </div>
                             </div>
                         </div>
+
+                        <div className="flex lg:flex-row flex-col  w-full gap-4">
+                            <div className="flex flex-1">
+                                <div className="flex flex-col w-full">
+                                    <label
+                                        htmlFor="firstName"
+                                        className="block text-gray-700 font-semibold"
+                                    >
+                                        Birth Date
+                                    </label>
+                                    <input
+                                        type="date"
+                                        id="firstName"
+                                        className="w-full px-3 py-2 border rounded-md"
+                                    />
+                                </div>
+                            </div>
+                            <div className="flex flex-1 ">
+                                <div className="flex flex-col w-full">
+                                    <label
+                                        htmlFor="firstName"
+                                        className="block text-gray-700 font-semibold"
+                                    >
+                                        Gender
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="firstName"
+                                        className="w-full px-3 py-2 border rounded-md"
+                                    />
+                                </div>
+                            </div>
+                            <div className="flex flex-1">
+                                <div className="flex flex-col w-full">
+                                    <label
+                                        htmlFor="firstName"
+                                        className="block text-gray-700 font-semibold"
+                                    >
+                                        Contacr Number
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="firstName"
+                                        className="w-full px-3 py-2 border rounded-md"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+
                     </div>
                     <div className="flex w-full flex-col">
                         <div className="flex lg:flex-row flex-col  w-full gap-4">
@@ -179,7 +288,7 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
                                         htmlFor="firstName"
                                         className="block text-gray-700 font-semibold"
                                     >
-                                        Email
+                                        Address
                                     </label>
                                     <input
                                         type="text"
@@ -194,6 +303,27 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
                                         htmlFor="firstName"
                                         className="block text-gray-700 font-semibold"
                                     >
+                                        Email address
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="firstName"
+                                        className="w-full px-3 py-2 border rounded-md"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div className="flex w-full flex-col">
+                        <div className="w-full flex items-start border-b mb-2"><p>Secuity</p></div>
+                        <div className="flex lg:flex-row flex-col  w-full gap-4">
+                            <div className="flex flex-1">
+                                <div className="flex flex-col w-full">
+                                    <label
+                                        htmlFor="firstName"
+                                        className="block text-gray-700 font-semibold"
+                                    >
                                         Password
                                     </label>
                                     <input
@@ -203,10 +333,24 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
                                     />
                                 </div>
                             </div>
-
+                            <div className="flex flex-1 ">
+                                <div className="flex flex-col w-full">
+                                    <label
+                                        htmlFor="firstName"
+                                        className="block text-gray-700 font-semibold"
+                                    >
+                                        Confirm Password
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="firstName"
+                                        className="w-full px-3 py-2 border rounded-md"
+                                    />
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div className="flex w-full items-center justify-center">
+                    <div className="flex w-full items-center justify-center pt-5">
                         <button
                             type="submit"
                             className="px-4 py-2 bg-blue-500  text-white rounded-md hover:bg-blue-600"

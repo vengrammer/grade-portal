@@ -6,16 +6,23 @@ import { getGradingPeriods } from "../../hooks/gradingPeriods";
 import { dateFormatter } from "../../utils/dateFormatter";
 import type { GradingPeriodType } from "../../types/gradingPeriod.type";
 
+import LoadingScreen from "../LoadingScreen";
+
 
 function GradingPeriod() {
     const [gradingPeriod, setGradingPeriod] = useState<GradingPeriodType[]>([]);
+    const [loading, setLoading] = useState(false);
 
     const fetchGradingPeriod = async () => {
+        
         try {
+            setLoading(true);
             const data = await getGradingPeriods();
             setGradingPeriod(data);
         } catch (error: any) {
             toast.error(error.message || "Something went wrong");
+        }finally{   
+            setLoading(false);
         }
     }
     useEffect(() => {
@@ -26,7 +33,7 @@ function GradingPeriod() {
 
 
     return (
-        <div className="flex flex-col flex-1 min-h-0 w-full p-4">
+        <div className="relative flex flex-col flex-1 min-h-0 w-full p-4">
 
              <div className="w-full flex items-center justify-between mb-4">
                 <h1 className="text-2xl font-semibold text-[#030ff3]">
@@ -52,6 +59,7 @@ function GradingPeriod() {
                     </div>))}
                 </div>
             </div>
+            {loading && <LoadingScreen loadingFor="component"/>}
         </div>
     )
 }

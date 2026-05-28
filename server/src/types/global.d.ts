@@ -24,11 +24,16 @@ declare global {
         last_name: string;
         middle_name?: string;
 
+        gender: string;
+        birth_date: Date;
+        address: string;
+        profile_picture?: string;
+
+        contact_number: string;
         email: string;
         password: string;
 
         role: Role;
-
         is_active: boolean;
 
         student_number?: string;

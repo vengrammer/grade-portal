@@ -3,17 +3,17 @@ import { Request, Response } from "express";
 
 
 interface TeacherPayload {
-  teacher_number: string;
-  first_name: string;
-  last_name: string;
-  middle_name: string;
-  gender: string;
-  address: string;
-  birth_date: string;
-  contact_number: string;
-  email: string;
-  password: string;
-  profile_picture?: string;
+    teacher_number: string;
+    first_name: string;
+    last_name: string;
+    middle_name: string;
+    gender: string;
+    address: string;
+    birth_date: string;
+    contact_number: string;
+    email: string;
+    password: string;
+    profile_picture?: string;
 }
 
 // Generate a unique random code for any user number
@@ -64,21 +64,28 @@ export const getTeachers = async (_req: Request, res: Response) => {
 };
 
 export const addTeacher = async (req: Request, res: Response) => {
-  try {
-    const teacherData: TeacherPayload = {
-      ...req.body,
-      role: "teacher",
-    };
+    try {
+        const existingTeacher = await User.findOne({ email: req.body.email });
 
-    const teacher = await User.create(teacherData);
+        if (existingTeacher) {
+            return res.status(400).json({
+                message: "The email already exists",
+            });
+        }
+        const teacherData: TeacherPayload = {
+            ...req.body,
+            role: "teacher",
+        };
 
-    res.status(201).json({
-      teacher,
-      message: "Teacher added successfully",
-    });
-  } catch (error: any) {
-    res.status(500).json({
-      message: error.message,
-    });
-  }
+        const teacher = await User.create(teacherData);
+
+        res.status(201).json({
+            teacher,
+            message: "Teacher added successfully",
+        });
+    } catch (error: any) {
+        res.status(500).json({
+            message: error.message,
+        });
+    }
 };

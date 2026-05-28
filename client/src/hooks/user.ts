@@ -15,7 +15,7 @@ export const getTeachers = async (): Promise<TeacherPayload[]> => {
 
     const data = await response.json();
     if (!response.ok) {
-        throw new Error(data.message);
+        throw data;
     }
     return data;
 };
@@ -41,7 +41,7 @@ export const addTeacher = async (
     const data = await response.json();
 
     if (!response.ok) {
-        throw new Error(data.message);
+        throw data;
     }
 
     return data;
@@ -61,7 +61,7 @@ export const accountnumber = async () => {
 
     const data = await response.json();
     if (!response.ok) {
-        throw new Error(data.message);
+        throw data;
     }
     return data;
 };

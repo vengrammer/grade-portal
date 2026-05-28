@@ -7,23 +7,7 @@ import { accountnumber } from "../hooks/user";
 
 import LoadingScreen from "./LoadingScreen";
 
-//sample data
-// {
-//   "teacher_number": "TCH12345",
-//   "first_name": "Juan",
-//   "last_name": "Dela Cruz",
-//   "middle_name": "Santos",
-//   "contact_number": "09171234567",
-//   "address": "Quiapo, Manila, Philippines",
-//   "birth_date": "1998-05-21",
-//   "profile_picture": "https://res.cloudinary.com/demo/image/upload/sample.jpg",
-//   "email": "juan.delacruz@example.com",
-//   "gender": "male",
-//   "password": "password123",
-//   "password_confirmation": "password123"
-// }
-
-interface IUser {
+export interface IUser {
     first_name: string;
     last_name: string;
     middle_name: string;
@@ -48,8 +32,13 @@ interface IModal {
 }
 
 function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal, refreshAccounts }: IModal) {
+
+
     const [isLoading, setIsLoading] = useState(false);
     const [viewPassword, setViewPassword] = useState(false);
+    const [errors, setErrors] = useState<Record<string, string>>({})
+
+
     const onClose = () => setOpenModal(false);
     const [formData, setFormData] = useState<IUser>({
         first_name: "",
@@ -93,19 +82,69 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
     }, [roleAccountToAdd]);
 
 
-    function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
         setFormData({ ...formData, [e.target.name]: e.target.value });
+        setErrors({ ...errors, [e.target.name]: "" });
     }
 
+    //font end input validation para hinde na mag rerequest sa server mag return agad ng error
+    const validateForm = (data: typeof formData) => {
+        const newErrors: Record<string, string> = {};
+
+        if (!data.account_number) {
+            newErrors.account_number = "Account number is required";
+        }
+
+        if (!data.first_name.trim()) {
+            newErrors.first_name = "First name is required";
+        }
+
+        if (!data.last_name.trim()) {
+            newErrors.last_name = "Last name is required";
+        }
+
+        if (!data.email.trim()) {
+            newErrors.email = "Email is required";
+        }
+
+        if (!data.gender) {
+            newErrors.gender = "Gender is required";
+        }
+
+        if (!data.address.trim()) {
+            newErrors.address = "Address is required";
+        }
+
+        if (!data.contact_number.trim()) {
+            newErrors.contact_number = "Contact number is required";
+        }
+
+        if (!data.password) {
+            newErrors.password = "Password is required";
+        } else if (data.password.length < 6) {
+            newErrors.password = "Password must be at least 6 characters";
+        }
+
+        if (!data.confirm_password) {
+            newErrors.confirm_password = "Confirm your password";
+        } else if (data.password !== data.confirm_password) {
+            newErrors.confirm_password = "Passwords do not match";
+        }
+
+        return newErrors;
+    };
 
     const handleCreateAccount = async (e: React.SubmitEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        if (formData.password !== formData.confirm_password) {
-            toast.error("Passwords do not match");
-            return
-        }
+        const validationErrors = validateForm(formData);
 
+        //stop if errors exist
+        if (Object.keys(validationErrors).length > 0) {
+            toast.error("Please fix the highlighted fields");
+            setErrors(validationErrors);
+            return;
+        }
         if (roleAccountToAdd === "teacher") {
             try {
                 await addTeacher({
@@ -119,6 +158,7 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
                     contact_number: formData.contact_number.trim(),
                     email: formData.email.trim(),
                     password: formData.password,
+                    confirm_password: formData.confirm_password,
 
                     ...(formData.profile_picture && {
                         profile_picture: formData.profile_picture,
@@ -129,6 +169,15 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
                 refreshAccounts();
                 onClose();
             } catch (error: any) {
+                if (error.errors?.length) {
+                    const fieldErrors: Record<string, string> = {};
+
+                    error.errors.forEach((err: any) => {
+                        fieldErrors[err.path] = err.msg;
+                    });
+                    setErrors(fieldErrors);
+                    return;
+                }
                 toast.error(error.message || "Something went wrong");
             }
         }
@@ -155,7 +204,7 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
         setPreview(null);
     };
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
+        <div className="fixed inset-0 z-50 flex items-center justify-center ">
             <div
                 className="absolute inset-0 bg-black/40 backdrop-blur-sm"
             />
@@ -166,7 +215,7 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
                     <X size={20} onClick={onClose} />
                 </button>
                 <h2 className="text-2xl font-semibold mb-3">{`Add New ${roleAccountToAdd}`}</h2>
-                <form onSubmit={handleCreateAccount} className="flex flex-col gap-4">
+                <form onSubmit={handleCreateAccount} className="flex flex-col gap-4 ">
                     <div className="flex w-full flex-col items-center justify-between">
 
                         <div className="w-full flex  border-b mb-2"><p>Account Number</p></div>
@@ -253,6 +302,11 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
                                         required
                                         className="w-full px-3 py-2 border rounded-md"
                                     />
+                                    {errors.first_name && (
+                                        <p className="text-red-500 text-sm mt-1">
+                                            {errors.first_name}
+                                        </p>
+                                    )}
                                 </div>
                             </div>
                             <div className="flex flex-1 ">
@@ -272,6 +326,11 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
                                         name="middle_name"
                                         className="w-full px-3 py-2 border rounded-md"
                                     />
+                                    {errors.middle_name && (
+                                        <p className="text-red-500 text-sm mt-1">
+                                            {errors.middle_name}
+                                        </p>
+                                    )}
                                 </div>
                             </div>
                             <div className="flex flex-1">
@@ -291,6 +350,11 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
                                         required
                                         className="w-full px-3 py-2 border rounded-md"
                                     />
+                                    {errors.last_name && (
+                                        <p className="text-red-500 text-sm mt-1">
+                                            {errors.last_name}
+                                        </p>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -313,6 +377,11 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
                                         required
                                         className="w-full px-3 py-2 border rounded-md"
                                     />
+                                    {errors.birth_date && (
+                                        <p className="text-red-500 text-sm mt-1">
+                                            {errors.birth_date}
+                                        </p>
+                                    )}
                                 </div>
                             </div>
                             <div className="flex flex-1 ">
@@ -323,15 +392,25 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
                                     >
                                         Gender
                                     </label>
-                                    <input
-                                        type="text"
-                                        value={formData.gender}
-                                        onChange={handleChange}
+                                    <select
                                         id="gender"
                                         name="gender"
+                                        onChange={handleChange}
                                         required
+                                        value={formData.gender}
                                         className="w-full px-3 py-2 border rounded-md"
-                                    />
+                                    >
+                                        <option value="" disabled>
+                                            Select gender
+                                        </option>
+                                        <option value="male">Male</option>
+                                        <option value="female">Female</option>
+                                    </select>
+                                    {errors.gender && (
+                                        <p className="text-red-500 text-sm mt-1">
+                                            {errors.gender}
+                                        </p>
+                                    )}
                                 </div>
                             </div>
                             <div className="flex flex-1">
@@ -351,6 +430,11 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
                                         required
                                         className="w-full px-3 py-2 border rounded-md"
                                     />
+                                    {errors.contact_number && (
+                                        <p className="text-red-500 text-sm mt-1">
+                                            {errors.contact_number}
+                                        </p>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -376,6 +460,11 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
                                         required
                                         className="w-full px-3 py-2 border rounded-md"
                                     />
+                                    {errors.address && (
+                                        <p className="text-red-500 text-sm mt-1">
+                                            {errors.address}
+                                        </p>
+                                    )}
                                 </div>
                             </div>
                             <div className="flex flex-1 ">
@@ -395,6 +484,11 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
                                         name="email"
                                         className="w-full px-3 py-2 border rounded-md"
                                     />
+                                    {errors.email && (
+                                        <p className="text-red-500 text-sm mt-1">
+                                            {errors.email}
+                                        </p>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -421,6 +515,11 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
                                         required
                                         className="w-full px-3 py-2 border rounded-md"
                                     />
+                                    {errors.password && (
+                                        <p className="text-red-500 text-sm mt-1">
+                                            {errors.password}
+                                        </p>
+                                    )}
                                 </div>
                             </div>
                             <div className="flex flex-1 ">
@@ -432,16 +531,24 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
                                         Confirm Password
                                     </label>
                                     <div className="flex-1 flex gap-2 ">
-                                        <input
-                                            type={viewPassword ? "text" : "password"}
-                                            value={formData.confirm_password}
-                                            onChange={handleChange}
-                                            id="confirm_password"
-                                            name="confirm_password"
-                                            min={6}
-                                            required
-                                            className="w-full px-3 py-2 border rounded-md"
-                                        />
+                                        <div className="flex-1">
+                                            <input
+                                                type={viewPassword ? "text" : "password"}
+                                                value={formData.confirm_password}
+                                                onChange={handleChange}
+                                                id="confirm_password"
+                                                name="confirm_password"
+                                                min={6}
+                                                required
+                                                className="w-full px-3 py-2 border rounded-md"
+                                            />
+                                            {errors.confirm_password && (
+                                                <p className="text-red-500 text-sm mt-1">
+                                                    {errors.confirm_password}
+                                                </p>
+                                            )}
+                                        </div>
+
                                         <button
                                             type="button"
                                             onClick={() => setViewPassword(!viewPassword)}

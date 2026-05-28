@@ -15,7 +15,7 @@ export const getSubjects = async (): Promise<SubjectType[]>  => {
     const data = await response.json();
 
     if (!response.ok) {
-        throw new Error(data.message);
+        throw data;
     }
     return data;
 }
@@ -37,7 +37,7 @@ export const addSubjects = async (name: string, description: string) => {
 
     const data = await response.json();
     if (!response.ok) {
-        throw new Error(data.message);
+        throw data;
     }
     return data;
 }

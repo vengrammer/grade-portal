@@ -10,5 +10,6 @@ export interface TeacherPayload {
   contact_number: string;
   email: string;
   password: string;
+  confirm_password: string;
   profile_picture?: string;
 }

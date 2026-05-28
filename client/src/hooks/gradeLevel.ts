@@ -23,7 +23,7 @@ export const addGradeLevel = async (name: string) => {
     const data = await response.json();
 
     if (!response.ok) {
-        throw new Error(data.message);
+        throw data;
     }
 
     return data;
@@ -46,7 +46,7 @@ export const getGradeLevels = async (): Promise<GradeLevelType[]> => {
     const data = await response.json();
 
     if (!response.ok) {
-        throw new Error(data.message);
+        throw data;
     }
     return data;
 };

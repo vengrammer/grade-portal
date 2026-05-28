@@ -17,7 +17,7 @@ export const getSections = async (): Promise<SectionType[]> => {
     const data = await response.json();
 
     if (!response.ok) {
-        throw new Error(data.message);
+        throw data;
     }
     return data;
 }
@@ -40,7 +40,7 @@ export const addSection = async (name: string, grade_level_id: string) => {
     const data = await response.json();
 
     if (!response.ok) {
-        throw new Error(data.message);
+        throw data;
     }
     return data;
 }

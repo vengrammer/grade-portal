@@ -17,7 +17,7 @@ export const getSchoolyears = async (): Promise<SchoolYearType[]> => {
     const data = await response.json();
 
     if (!response.ok) {
-        throw new Error(data.message);
+        throw data;
     }
     return data;
 };
@@ -36,7 +36,7 @@ export const addSchoolYear = async () => {
 
     const data = await response.json();
     if (!response.ok) {
-        throw new Error(data.message);
+        throw data;
     }
     return data;
 };

@@ -5,13 +5,37 @@ import { addTeacher } from "../hooks/user";
 import { toast } from "react-toastify";
 import { accountnumber } from "../hooks/user";
 
+// {
+//   "teacher_number": "TCH12345",
+//   "first_name": "Juan",
+//   "last_name": "Dela Cruz",
+//   "middle_name": "Santos",
+//   "contact_number": "09171234567",
+//   "address": "Quiapo, Manila, Philippines",
+//   "birth_date": "1998-05-21",
+//   "profile_picture": "https://res.cloudinary.com/demo/image/upload/sample.jpg",
+//   "email": "juan.delacruz@example.com",
+//   "gender": "male",
+//   "password": "password123",
+//   "password_confirmation": "password123"
+// }
+
 interface IUser {
+
     first_name: string;
     last_name: string;
     middle_name: string;
+
+    contact_number: string;
+    address: string;
+    birth_date: string;
+    profile_picture?: string;
+    gender: string;
+
     email: string;
     password: string;
     account_number: string
+    confirm_password: string
 }
 
 type roleAccountToAdd = "student" | "teacher" | "admin";
@@ -30,13 +54,18 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
         first_name: "",
         last_name: "",
         middle_name: "",
+        address: "",
+        birth_date: "",
+        contact_number: "",
+        gender: "",
+        profile_picture: "",
         email: "",
         password: "",
-        account_number: ""
+        account_number: "",
+        confirm_password: ""
     });
 
     if (!openModal) return null;
-
 
     const generateAccountNumber = async () => {
         try {
@@ -45,7 +74,6 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
                 toast.error("Failed to generate account number");
                 setOpenModal(false);
             }
-
             setFormData((prev) => ({
                 ...prev,
                 account_number: response?.number,
@@ -71,20 +99,41 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
 
     const handleCreateAccount = async (e: React.SubmitEvent<HTMLFormElement>) => {
         e.preventDefault();
-        try {
-            await addTeacher(formData.account_number,
-                formData.first_name,
-                formData.last_name,
-                formData.middle_name,
-                formData.email,
-                formData.password);
-
-            toast.success("Account created successfully");
-            refreshAccounts();
-            onClose();
-        } catch (error: any) {
-            toast.error(error.message || "Something went wrong");
+        if (formData.profile_picture === "") {
+            toast.error("Please upload a profile picture");
+            return
         }
+
+        if (formData.password !== formData.confirm_password) {
+            toast.error("Passwords do not match");
+            return
+        }
+
+        if (roleAccountToAdd === "teacher") {
+            try {
+                await addTeacher(
+                    formData.account_number,
+                    formData.first_name,
+                    formData.last_name,
+                    formData.middle_name,
+                    formData.gender,
+                    formData.address,
+                    formData.birth_date,
+                    formData.contact_number,
+                    formData.email,
+                    formData.profile_picture ="",
+                    formData.password
+                );
+
+                toast.success("Account created successfully");
+                refreshAccounts();
+                onClose();
+            } catch (error: any) {
+                toast.error(error.message || "Something went wrong");
+            }
+        }
+
+
     }
 
     const [preview, setPreview] = useState<string | null>(null);
@@ -120,7 +169,7 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
                         <div className="flex flex-1  w-full items-center justify-between gap-5 ">
                             <div className="flex-1">
                                 <label
-                                    htmlFor="firstName"
+                                    htmlFor="account_number"
                                     className="block text-gray-700 font-semibold "
                                 >
                                     Account Number(Auto Generated)
@@ -131,7 +180,7 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
                                     readOnly
                                     name="account_number"
                                     type="text"
-                                    id="firstName"
+                                    id="account_number"
                                     className="w-full px-3 py-2 border rounded-md items-center justify-items-center flex"
                                 />
                             </div>
@@ -186,14 +235,17 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
                             <div className="flex flex-1">
                                 <div className="flex flex-col w-full">
                                     <label
-                                        htmlFor="firstName"
+                                        htmlFor="first_name"
                                         className="block text-gray-700 font-semibold"
                                     >
                                         First Name
                                     </label>
                                     <input
                                         type="text"
-                                        id="firstName"
+                                        value={formData.first_name}
+                                        onChange={handleChange}
+                                        id="first_name"
+                                        name="first_name"
                                         className="w-full px-3 py-2 border rounded-md"
                                     />
                                 </div>
@@ -201,14 +253,17 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
                             <div className="flex flex-1 ">
                                 <div className="flex flex-col w-full">
                                     <label
-                                        htmlFor="firstName"
+                                        htmlFor="middle_name"
                                         className="block text-gray-700 font-semibold"
                                     >
                                         Middle Name
                                     </label>
                                     <input
                                         type="text"
-                                        id="firstName"
+                                        value={formData.middle_name}
+                                        onChange={handleChange}
+                                        id="middle_name"
+                                        name="middle_name"
                                         className="w-full px-3 py-2 border rounded-md"
                                     />
                                 </div>
@@ -216,14 +271,17 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
                             <div className="flex flex-1">
                                 <div className="flex flex-col w-full">
                                     <label
-                                        htmlFor="firstName"
+                                        htmlFor="last_name"
                                         className="block text-gray-700 font-semibold"
                                     >
                                         Last Name
                                     </label>
                                     <input
                                         type="text"
-                                        id="firstName"
+                                        value={formData.last_name}
+                                        onChange={handleChange}
+                                        id="last_name"
+                                        name="last_name"
                                         className="w-full px-3 py-2 border rounded-md"
                                     />
                                 </div>
@@ -234,14 +292,17 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
                             <div className="flex flex-1">
                                 <div className="flex flex-col w-full">
                                     <label
-                                        htmlFor="firstName"
+                                        htmlFor="birth_date"
                                         className="block text-gray-700 font-semibold"
                                     >
                                         Birth Date
                                     </label>
                                     <input
                                         type="date"
-                                        id="firstName"
+                                        value={formData.birth_date}
+                                        onChange={handleChange}
+                                        id="birth_date"
+                                        name="birth_date"
                                         className="w-full px-3 py-2 border rounded-md"
                                     />
                                 </div>
@@ -249,14 +310,17 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
                             <div className="flex flex-1 ">
                                 <div className="flex flex-col w-full">
                                     <label
-                                        htmlFor="firstName"
+                                        htmlFor="gender"
                                         className="block text-gray-700 font-semibold"
                                     >
                                         Gender
                                     </label>
                                     <input
                                         type="text"
-                                        id="firstName"
+                                        value={formData.gender}
+                                        onChange={handleChange}
+                                        id="gender"
+                                        name="gender"
                                         className="w-full px-3 py-2 border rounded-md"
                                     />
                                 </div>
@@ -264,14 +328,17 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
                             <div className="flex flex-1">
                                 <div className="flex flex-col w-full">
                                     <label
-                                        htmlFor="firstName"
+                                        htmlFor="contact_number"
                                         className="block text-gray-700 font-semibold"
                                     >
-                                        Contacr Number
+                                        Contact Number
                                     </label>
                                     <input
                                         type="text"
-                                        id="firstName"
+                                        value={formData.contact_number}
+                                        onChange={handleChange}
+                                        id="contact_number"
+                                        name="contact_number"
                                         className="w-full px-3 py-2 border rounded-md"
                                     />
                                 </div>
@@ -285,14 +352,17 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
                             <div className="flex flex-1">
                                 <div className="flex flex-col w-full">
                                     <label
-                                        htmlFor="firstName"
+                                        htmlFor="address"
                                         className="block text-gray-700 font-semibold"
                                     >
                                         Address
                                     </label>
                                     <input
                                         type="text"
-                                        id="firstName"
+                                        value={formData.address}
+                                        onChange={handleChange}
+                                        id="address"
+                                        name="address"
                                         className="w-full px-3 py-2 border rounded-md"
                                     />
                                 </div>
@@ -300,35 +370,41 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
                             <div className="flex flex-1 ">
                                 <div className="flex flex-col w-full">
                                     <label
-                                        htmlFor="firstName"
+                                        htmlFor="email"
                                         className="block text-gray-700 font-semibold"
                                     >
                                         Email address
                                     </label>
                                     <input
                                         type="text"
-                                        id="firstName"
+                                        value={formData.email}
+                                        onChange={handleChange}
+                                        id="email"
+                                        name="email"
                                         className="w-full px-3 py-2 border rounded-md"
                                     />
                                 </div>
                             </div>
                         </div>
                     </div>
-                    
+
                     <div className="flex w-full flex-col">
                         <div className="w-full flex items-start border-b mb-2"><p>Secuity</p></div>
                         <div className="flex lg:flex-row flex-col  w-full gap-4">
                             <div className="flex flex-1">
                                 <div className="flex flex-col w-full">
                                     <label
-                                        htmlFor="firstName"
+                                        htmlFor="password"
                                         className="block text-gray-700 font-semibold"
                                     >
                                         Password
                                     </label>
                                     <input
                                         type="text"
-                                        id="firstName"
+                                        value={formData.password}
+                                        onChange={handleChange}
+                                        id="password"
+                                        name="password"
                                         className="w-full px-3 py-2 border rounded-md"
                                     />
                                 </div>
@@ -336,14 +412,17 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
                             <div className="flex flex-1 ">
                                 <div className="flex flex-col w-full">
                                     <label
-                                        htmlFor="firstName"
+                                        htmlFor="confirm_password"
                                         className="block text-gray-700 font-semibold"
                                     >
                                         Confirm Password
                                     </label>
                                     <input
                                         type="text"
-                                        id="firstName"
+                                        value={formData.confirm_password}
+                                        onChange={handleChange}
+                                        id="confirm_password"
+                                        name="confirm_password"
                                         className="w-full px-3 py-2 border rounded-md"
                                     />
                                 </div>

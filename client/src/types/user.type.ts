@@ -17,7 +17,7 @@ export interface UserPayload {
 
 export type UserType = {
   _id: string;
-  acccount_number: string;
+  account_number: string;
   first_name: string;
   last_name: string;
   middle_name: string;
@@ -28,7 +28,6 @@ export type UserType = {
   email: string;
   is_active: boolean;
   profile_picture: string;
-  student_number: string;
   createdAt: string;
   updatedAt: string;
 }

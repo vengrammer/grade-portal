@@ -45,7 +45,7 @@ function Teachers() {
             <div className="flex flex-col flex-1 min-h-0 w-full border rounded-2xl bg-white">
                 <div className="grid grid-cols-[80px_1fr_1fr_1fr_1fr_1fr_100px] bg-gray-100 border-b px-4 rounded-t-2xl py-3 font-semibold text-[#030ff3]">
                     <div>No.</div>
-                    <div>Teacher No.</div>
+                    <div>Account No.</div>
                     <div>Full Name</div>
                     <div>is Active</div>
                     <div>Created At</div>

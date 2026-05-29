@@ -11,33 +11,33 @@ import type { UserType } from "../../types/user.type";
 import AddNewAccountModal from "../AddNewAccountModal";
 import { getUsersByRole } from "../../hooks/user";
 
-function Students() {
-    const [students, setStudents] = useState<UserType[]>([]);
+function Admins() {
+    const [admins, setAdmins] = useState<UserType[]>([]);
     const [openModal, setOpenModal] = useState(false);
 
-    const fetchStudents = async () => {
+    const fetchAdmins = async () => {
         try {
-            const data = await getUsersByRole("student");;
-            setStudents(data);
+            const data = await getUsersByRole("admin");
+            setAdmins(data);
         } catch (error: any) {
             toast.error(error.message || "Something went wrong");
         }
     }
     useEffect(() => {
-        fetchStudents();
+        fetchAdmins();
     }, []);
 
     return (
         <div className="flex flex-col flex-1 min-h-0 w-full p-4">
             <div className="w-full flex items-center justify-between mb-4">
                 <h1 className="text-2xl font-semibold text-[#030ff3]">
-                    Students
+                    Admins
                 </h1>
                 <button
                     onClick={() => setOpenModal(true)}
                     className="cursor-pointer hover:scale-110 transform transition-transform duration-200 flex items-center gap-2 px-4 py-2 rounded-xl text-white bg-[#055bfa] hover:bg-blue-700">
                     <Plus size={20} />
-                    Student
+                    Admin
                 </button>
             </div>
 
@@ -53,13 +53,13 @@ function Students() {
                     <div>Actions</div>
                 </div>
                 <div className="flex-1 min-h-0 overflow-y-auto ">
-                    {students.length === 0 ? (<div className="flex items-center justify-center h-full">No Student Found</div>) : students.map((s, index) => (<div key={s._id} className="grid grid-cols-[80px_1fr_1fr_1fr_1fr_1fr_100px] items-center px-4 py-3 border-b hover:bg-[#b8bbbd] transition">
+                    {admins.length === 0 ? (<div className="flex items-center justify-center h-full">No Admins Found</div>) : admins.map((a, index) => (<div key={a._id} className="grid grid-cols-[80px_1fr_1fr_1fr_1fr_1fr_100px] items-center px-4 py-3 border-b hover:bg-[#b8bbbd] transition">
                         <div>{index + 1}</div>
-                        <div>{s.account_number}</div>
-                        <div>{s.first_name} {s.last_name} {s.middle_name}</div>
-                        <div>{s.is_active ? "Yes" : "No"}</div>
-                        <div>{dateFormatter(s.createdAt)}</div>
-                        <div>{dateFormatter(s.updatedAt)}</div>
+                        <div>{a.account_number}</div>
+                        <div>{a.first_name} {a.last_name} {a.middle_name}</div>
+                        <div>{a.is_active ? "Yes" : "No"}</div>
+                        <div>{dateFormatter(a.createdAt)}</div>
+                        <div>{dateFormatter(a.updatedAt)}</div>
                         <div className="flex items-center justify-center gap-1.5">
                             <button className="cursor-pointer bg-green-600 p-1 rounded text-white hover:bg-green-800 hover:scale-150 transition-transform duration-200 ease-in-out">
                                 <Eye size={20} />
@@ -78,12 +78,12 @@ function Students() {
             {openModal
                 &&
                 <AddNewAccountModal
-                    roleAccountToAdd="student"
+                    roleAccountToAdd="admin"
                     openModal={openModal}
-                    setOpenModal={setOpenModal}
-                    refreshAccounts={fetchStudents}
+                    setOpenModal={setOpenModal} 
+                    refreshAccounts={fetchAdmins}
                 />}
         </div>
     )
 }
-export default Students;
+export default Admins;

@@ -224,7 +224,7 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
                 >
                     <X size={20} onClick={onClose} />
                 </button>
-                <h2 className="text-2xl font-semibold mb-3">{`Add New ${roleAccountToAdd}`}</h2>
+                <h2 className="text-2xl font-semibold mb-3">{`Add New ${roleAccountToAdd.charAt(0).toUpperCase() + roleAccountToAdd.slice(1)}`}</h2>
                 <form onSubmit={handleCreateAccount} className="flex flex-col gap-4 ">
                     <div className="flex w-full flex-col items-center justify-between">
 

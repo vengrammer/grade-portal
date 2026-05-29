@@ -10,6 +10,7 @@ import Schoolyears from "../components/admin/SchoolYears";
 import GradingPeriod from "../components/admin/GradingPeriod";
 import Teachers from "../components/admin/Teachers";
 import Students from "../components/admin/Students";
+import Admins from "../components/admin/Admins";
 function AdminRouter() {
     return (
         <Routes >
@@ -19,6 +20,7 @@ function AdminRouter() {
 
                 <Route path="teachers" element={<Teachers/>} />
                 <Route path="students" element={<Students/>} />
+                <Route path="admins" element={<Admins/>} />
 
                 <Route path="gradelevels" element={<GradeLevels/>} />
                 <Route path="sections" element={<Sections/>} />

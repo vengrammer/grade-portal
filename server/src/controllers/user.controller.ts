@@ -33,25 +33,17 @@ export const getGeneratedNumber = async (_req: Request, res: Response) => {
     }
 };
 
-export const getTeachers = async (_req: Request, res: Response) => {
-    try {
-        const teachers = await User.find({ role: "teacher" });
-        res.status(200).json(teachers);
-    } catch (error: any) {
-        res.status(500).json({ message: error.message });
-    }
-};
 
 export const getUsersByRole = async (req: Request, res: Response) => {
     try {
 
         const roleType = "teacher | student | admin";
         const { role } = req.query;
-        console.log(role);
 
         if (role !== "teacher" && role !== "student" && role !== "admin") {
             return res.status(400).json({ message: `Role must be ${roleType}` });
         }
+        
         const users = await User.find({ role: role });
         res.status(200).json(users);
     } catch (error: any) {

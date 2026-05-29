@@ -27,7 +27,7 @@ export type UserType = {
   contact_number: string;
   email: string;
   is_active: boolean;
-  profile_picture: string;
+  profile_picture?: string;
   createdAt: string;
   updatedAt: string;
 }

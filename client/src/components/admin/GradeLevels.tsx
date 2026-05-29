@@ -36,7 +36,7 @@ export function AddGradeLevel({ onClose, openModal, refreshGradeLevels }: AddGra
 
             const response = await addGradeLevel(validName);
 
-            toast.success(response.message);
+            toast.success(response.message);    
 
             refreshGradeLevels();
 

@@ -104,13 +104,15 @@ declare global {
     interface IEnrollment extends Document {
         _id?: Types.ObjectId;
 
-        student_id: Types.ObjectId | IUser;
+        account_id: Types.ObjectId | IUser;
 
         school_year_id: Types.ObjectId | ISchoolYear;
 
         grade_level_id: Types.ObjectId | IGradeLevel;
 
         section_id: Types.ObjectId | ISection;
+
+        school_sem: string;
 
         status: EnrollmentStatus;
 

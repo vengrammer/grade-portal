@@ -47,8 +47,7 @@ function AdminLayout() {
             </header>
 
             <div className="flex flex-1 min-h-0">
-                <aside className="w-72 bg-[#226bfc] text-white flex flex-col p-4 gap-4">
-
+                <aside className="max-w-60 bg-[#226bfc] text-white flex flex-col p-4 gap-4">
                     <div className="border-b border-white/20 pb-3">
                         <p className="text-lg font-bold">Welcome Admin</p>
                     </div>

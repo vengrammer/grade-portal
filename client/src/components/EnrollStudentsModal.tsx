@@ -1,0 +1,147 @@
+import { Search, Trash2, X } from "lucide-react"
+import { useState } from "react"
+
+interface EnrollStudentsModalProps {
+    open: boolean
+    setOpen: (value: boolean) => void
+}
+
+function EnrollStudentsModal({ open, setOpen }: EnrollStudentsModalProps) {
+    if (!open) return null
+    const [sem, setSem] = useState("")
+
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+            <div className="absolute inset-0 bg-black/30 backdrop-blur-xs flex items-center justify-center">
+                <div className="relative w-full max-w-300 md:mx-4 bg-white md:rounded-xl shadow-xl p-5 max-h-screen overflow-y-auto">
+                    <div className="flex w-full justify-between mb-2">
+                        <h2 className="text-xl font-semibold">Enroll A Students </h2>
+                        <button><X size={20} onClick={() => setOpen(false)} /></button>
+                    </div>
+                    <div className="flex flex-col ">
+                        <form className="flex flex-col gap-2">
+                            <div className="flex w-full border-b">
+                                <p>Enrollment info</p>
+                            </div>
+                            {/* Enrollment info*/}
+                            <div className="flex flex-1 gap-2">
+
+                                <div className="flex flex-col w-full ">
+                                    <label
+                                        htmlFor="first_name"
+                                        className="block text-gray-700 font-semibold"
+                                    >
+                                        School Year
+                                    </label>
+                                    <input
+                                        type="text"
+
+                                        id="first_name"
+                                        name="first_name"
+                                        required
+                                        className="w-full px-3 py-2 border rounded-md"
+                                    />
+                                </div>
+                                <div className="flex flex-col w-full">
+                                    <label
+                                        htmlFor="first_name"
+                                        className="block text-gray-700 font-semibold"
+                                    >
+                                        Grade Level
+                                    </label>
+                                    <input
+                                        type="text"
+
+                                        id="first_name"
+                                        name="first_name"
+                                        required
+                                        className="w-full px-3 py-2 border rounded-md"
+                                    />
+                                </div>
+                                <div className="flex flex-col w-full ">
+                                    <label
+                                        htmlFor="first_name"
+                                        className="block text-gray-700 font-semibold"
+                                    >
+                                        Section
+                                    </label>
+                                    <input
+                                        type="text"
+
+                                        id="first_name"
+                                        name="first_name"
+                                        required
+                                        className="w-full px-3 py-2 border rounded-md"
+                                    />
+                                </div>
+                                <div className="flex flex-col w-full">
+                                    <label
+                                        htmlFor="first_name"
+                                        className="w-full flex items-center justify-center text-gray-700 font-semibold "
+                                    >
+                                        Semester
+                                    </label>
+                                    <div className="flex  flex-1 justify-center items-center gap-5">
+                                        <label>
+                                            <input
+                                                type="radio"
+                                                name="gender"
+                                                value="1st"
+                                                checked={sem === "1st"}
+                                                onChange={(e) => setSem(e.target.value)}
+                                            />
+                                            1st Sem
+                                        </label>
+
+                                        <label>
+                                            <input
+                                                type="radio"
+                                                name="gender"
+                                                value="2nd"
+                                                checked={sem === "2nd"}
+                                                onChange={(e) => setSem(e.target.value)}
+                                            />
+                                            2nd Sem
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="flex w-full items-center justify-between px-2 font-semibold mt-5">
+                                <button type="button" className="hover:scale-105 transition transform duration-200 cursor-pointer border p-2 rounded bg-[#0e57d6] text-white flex gap-2"><Search/> View Students </button>
+                                <div>
+                                    <input
+                                        type="text"
+                                        placeholder="Search student.."
+                                        required
+                                        className="w-full px-2 py-2 border rounded-md"
+                                    />
+                                </div>
+                            </div>
+                            {/* Students that not enrolled for*/}
+                            <div className="flex flex-1 flex-col w-full border min-h-140 overflow-auto rounded-xl">
+                                <div className="grid grid-cols-[1fr_1fr_1fr_1fr_100px] bg-gray-400 py-2 px-4 font-semibold" >
+                                    <div className="whitespace-nowrap">Account No.</div>
+                                    <div className="whitespace-nowrap">Full Name</div>
+                                    <div className="whitespace-nowrap">Gender</div>
+                                    <div className="whitespace-nowrap">Is Active</div>
+                                    <div className="whitespace-nowrap">Action</div>
+                                </div>
+                                <div className="flex min-h-0 flex-col flex-1 overflow-auto">
+                                    <div className="grid grid-cols-[1fr_1fr_1fr_1fr_100px] py-2 px-4 border-b">
+                                        <div>1</div>
+                                        <div>124543 </div>
+                                        <div>Gerona, Reven, Amazona</div>
+                                        <div>Yes</div>
+                                        <div className="flex items-center justify-center"><Trash2 /></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div >
+    )
+}
+
+export default EnrollStudentsModal

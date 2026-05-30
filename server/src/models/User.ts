@@ -30,6 +30,7 @@ const userSchema = new Schema<IUser>(
             type: String,
             trim: true,
             required: true,
+            unique: true,
         },
 
         birth_date: {
@@ -65,6 +66,7 @@ const userSchema = new Schema<IUser>(
     },
     { timestamps: true }
 );
+
 
 
 // hash password before saving

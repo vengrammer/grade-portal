@@ -31,4 +31,5 @@ app.get("/", (req, res) => {
 app.use("/api", adminRouter);
 
 app.use(errorHandler);
+
 export default app;

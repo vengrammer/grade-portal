@@ -35,7 +35,6 @@ interface IModal {
 
 function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal, refreshAccounts }: IModal) {
 
-
     const [isLoading, setIsLoading] = useState(false);
     const [viewPassword, setViewPassword] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({})
@@ -411,7 +410,7 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
                                             value={formData.gender}
                                             className=" px-3 py-2 border rounded-md"
                                         >
-                                            <option className="" value="" disabled>
+                                            <option disabled>
                                                 Select gender
                                             </option>
                                             <option value="male">Male</option>

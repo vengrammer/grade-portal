@@ -2,7 +2,7 @@ import { Schema, model } from "mongoose";
 
 const enrollmentSchema = new Schema<IEnrollment>(
     {
-        student_id: {
+        account_id: {
             type: Schema.Types.ObjectId,
             ref: "User",
             required: true,
@@ -17,6 +17,12 @@ const enrollmentSchema = new Schema<IEnrollment>(
         grade_level_id: {
             type: Schema.Types.ObjectId,
             ref: "GradeLevel",
+            required: true,
+        },
+
+        school_sem: {
+            type: String,
+            enum: ["1st", "2nd"],
             required: true,
         },
 
@@ -38,8 +44,9 @@ const enrollmentSchema = new Schema<IEnrollment>(
 /*
 Prevent duplicate enrollment per year AND section
 */
+
 enrollmentSchema.index(
-    { student_id: 1, school_year_id: 1, section_id: 1 },
+    { student_id: 1, school_year_id: 1, section_id: 1 , school_sem: 1, account_id: 1},
     { unique: true }
 );
 

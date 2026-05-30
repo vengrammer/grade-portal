@@ -10,7 +10,6 @@ const app = express();
 app.use(morgan("dev"));//I am using morgan to log the requests in the terminal
 app.use(express.json());
 
-
 //allow cross origin meaning we can access the backend from the frontend
 const ALLOWED_CORS =  process.env.ALLOWED_CORS;
 if(!ALLOWED_CORS){

@@ -6,7 +6,7 @@ import { Request, Response } from "express";
 
 export const getSchoolyears = async (_req: Request, res: Response) => {
     try {
-        const schoolyears = await SchoolYear.find();
+        const schoolyears = await SchoolYear.find().sort({createdAt: -1});
 
         const startedDate = 2025;
         const endDate = 2026;

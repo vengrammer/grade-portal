@@ -46,7 +46,11 @@ Prevent duplicate enrollment per year AND section
 */
 
 enrollmentSchema.index(
-    { student_id: 1, school_year_id: 1, section_id: 1 , school_sem: 1, account_id: 1},
+    {
+        school_year_id: 1,
+        school_sem: 1,
+        account_id: 1,
+    },
     { unique: true }
 );
 

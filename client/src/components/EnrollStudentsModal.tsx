@@ -27,7 +27,6 @@ interface IEnrollment {
 
 function EnrollStudentsModal({ open, setOpen }: EnrollStudentsModalProps) {
     if (!open) return null
-    const [sem, setSem] = useState("")
     const [gradeLevel, setGradeLevel] = useState<GradeLevelType[]>([])
     const [sections, setSections] = useState<SectionType[]>([])
     const [schoolYear, setSchoolYear] = useState<SchoolYearType[]>([])
@@ -82,7 +81,7 @@ function EnrollStudentsModal({ open, setOpen }: EnrollStudentsModalProps) {
     const fetchSections = async () => {
         try {
             const data = await getSections(formData.grade_level_id)
-            
+
             if (data.length > 0) {
                 setFormData((prev) => ({
                     ...prev,
@@ -103,7 +102,7 @@ function EnrollStudentsModal({ open, setOpen }: EnrollStudentsModalProps) {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     }
 
-    function handleSubmit(e: React.SubmitEvent<HTMLFormElement>){
+    function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
         console.log(formData)
     }
@@ -185,8 +184,8 @@ function EnrollStudentsModal({ open, setOpen }: EnrollStudentsModalProps) {
                                                 type="radio"
                                                 name="school_sem"
                                                 value="1st"
-                                                checked={sem === "1st"}
-                                                onChange={(e) => setSem(e.target.value)}
+                                                checked={formData.school_sem === "1st"}
+                                                onChange={handleChange}
                                             />
                                             1st Sem
                                         </label>
@@ -196,8 +195,8 @@ function EnrollStudentsModal({ open, setOpen }: EnrollStudentsModalProps) {
                                                 type="radio"
                                                 name="school_sem"
                                                 value="2nd"
-                                                checked={sem === "2nd"}
-                                                onChange={(e) => setSem(e.target.value)}
+                                                checked={formData.school_sem === "2nd"}
+                                                onChange={handleChange}
                                             />
                                             2nd Sem
                                         </label>

@@ -183,7 +183,7 @@ function Sections() {
                     <div className="text-center">Actions</div>
                 </div>
                 <div className="flex-1 min-h-0 overflow-y-auto ">
-                    {sections.length === 0 ? (<div className="flex items-center justify-center h-full">No grade levels found</div>) : sections.map((s, index) => (<div key={s._id} className="grid grid-cols-[80px_1fr_1fr_1fr_1fr_80px] items-center px-4 py-3 border-b hover:bg-[#b8bbbd] transition">
+                    {sections.length === 0 ? (<div className="flex items-center justify-center h-full">No Section found</div>) : sections.map((s, index) => (<div key={s._id} className="grid grid-cols-[80px_1fr_1fr_1fr_1fr_80px] items-center px-4 py-3 border-b hover:bg-[#b8bbbd] transition">
                         <div>{index + 1}</div>
                         <div>{s.name}</div>
                         <div>{s.grade_level?.name}</div>

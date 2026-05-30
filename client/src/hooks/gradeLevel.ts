@@ -36,7 +36,6 @@ export const getGradeLevels = async (): Promise<GradeLevelType[]> => {
         credentials: "include",
     });
 
-
     // check if the content type is application/json... meaning it will not show an html error page
     const contentType = response.headers.get("content-type");
     if (!contentType || !contentType.includes("application/json")) {

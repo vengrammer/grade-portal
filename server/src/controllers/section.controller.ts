@@ -3,16 +3,31 @@ import { Section } from "../models/Section";
 import { GradeLevel } from "../models/GradeLevel";
 import { Types } from "mongoose";
 
+
 interface ISection {
     name: string;
     grade_level_id: Types.ObjectId;
 }
 
-
-export async function getSections(_req: Request, res: Response) {
+export async function getSections(req: Request, res: Response) {
     try {
+        //if theres a grade_level_id it will filter the sections using the grade_level
+        const { grade_level_id } = req.query
+        const macthGradeLevel: any = {}
+
+        if (grade_level_id) {
+            const gradeLevel = await GradeLevel.findById(grade_level_id);
+            if (!gradeLevel) {
+                return res.status(404).json({ message: "Grade level not found" });
+            }
+            macthGradeLevel.grade_level_id  = gradeLevel._id
+        }
+
         const sections = await Section.aggregate([
             {
+                $match: macthGradeLevel,
+            },
+            { 
                 $lookup: {
                     from: "gradelevels",
                     localField: "grade_level_id",
@@ -24,10 +39,9 @@ export async function getSections(_req: Request, res: Response) {
                 $unwind: "$grade_level",
             },
             {
-                $sort: { "grade_level.name": 1}
+                $sort: { "grade_level.name": 1 }
             }
         ]);
-
 
         res.status(200).json(sections);
     } catch (error) {

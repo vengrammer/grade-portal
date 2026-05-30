@@ -1,14 +1,73 @@
 import { Search, Trash2, X } from "lucide-react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
+
+import { getGradeLevels } from "../hooks/gradeLevel"
+import { getSections } from "../hooks/section"
+import { getSchoolyears } from "../hooks/schoolYear"
+
+import type { GradeLevelType } from "../types/gradeLevel.type"
+import type { SectionType } from "../types/sections.type"
+import type { SchoolYearType } from "../types/schoolYear.type"
+import { toast } from "react-toastify"
+
 
 interface EnrollStudentsModalProps {
     open: boolean
     setOpen: (value: boolean) => void
 }
 
+type school_sem = "1st" | "2nd"
+
+interface IEnrollment {
+    school_year_id: string,
+    grade_level_id: string,
+    school_sem: school_sem,
+    section_id: string,
+    student_selected: string[]
+}
+
 function EnrollStudentsModal({ open, setOpen }: EnrollStudentsModalProps) {
     if (!open) return null
     const [sem, setSem] = useState("")
+    const [gradeLevel, setGradeLevel] = useState<GradeLevelType[]>([])
+    const [sections, setSections] = useState<SectionType[]>([])
+    const [schoolYear, setSchoolYear] = useState<SchoolYearType[]>([])
+
+    const [formData, setFormData] = useState<IEnrollment>({
+        school_year_id: "",
+        grade_level_id: "",
+        school_sem: "1st",
+        section_id: "",
+        student_selected: [],
+    })
+
+    //get the grade level so I can past in the
+    const fetchGradeLevels = async () => {
+        try {
+            const data = await getGradeLevels();
+            setGradeLevel(data);
+        } catch (error: any) {
+            toast.error(error.message || "Something went wrong")
+        }
+    }
+
+    const fetchSchoolYear = async () => {
+        try {
+            const data = await getSchoolyears();
+            setSchoolYear(data);
+        } catch (error: any) {
+            toast.error(error.message || "Something went wrong")
+        }
+    }
+
+    useEffect(() => {
+        fetchGradeLevels()
+        fetchSchoolYear()
+    }, [])
+
+    function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    }
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -28,35 +87,35 @@ function EnrollStudentsModal({ open, setOpen }: EnrollStudentsModalProps) {
 
                                 <div className="flex flex-col w-full ">
                                     <label
-                                        htmlFor="first_name"
+                                        htmlFor="schoolyear"
                                         className="block text-gray-700 font-semibold"
                                     >
                                         School Year
                                     </label>
-                                    <input
-                                        type="text"
-
-                                        id="first_name"
-                                        name="first_name"
-                                        required
-                                        className="w-full px-3 py-2 border rounded-md"
-                                    />
+                                    <select
+                                        name="schoolyear"
+                                        id="schoolyear"
+                                        className="w-full px-3 py-2 border rounded-md">
+                                        {schoolYear.map((e, index) => (
+                                            <option key={index} value={e._id}>{e.school_year}</option>
+                                        ))}
+                                    </select>
                                 </div>
                                 <div className="flex flex-col w-full">
                                     <label
-                                        htmlFor="first_name"
+                                        htmlFor="gradelevel"
                                         className="block text-gray-700 font-semibold"
                                     >
                                         Grade Level
                                     </label>
-                                    <input
-                                        type="text"
-
-                                        id="first_name"
-                                        name="first_name"
-                                        required
-                                        className="w-full px-3 py-2 border rounded-md"
-                                    />
+                                    <select
+                                        name="gradelevel"
+                                        id="gradelevel"
+                                        className="w-full px-3 py-2 border rounded-md">
+                                        {gradeLevel.map((e, index) => (
+                                            <option key={index} value={e._id}>{e.name}</option>
+                                        ))}
+                                    </select>
                                 </div>
                                 <div className="flex flex-col w-full ">
                                     <label
@@ -107,7 +166,7 @@ function EnrollStudentsModal({ open, setOpen }: EnrollStudentsModalProps) {
                                 </div>
                             </div>
                             <div className="flex w-full items-center justify-between px-2 font-semibold mt-5">
-                                <button type="button" className="hover:scale-105 transition transform duration-200 cursor-pointer border p-2 rounded bg-[#0e57d6] text-white flex gap-2"><Search/> View Students </button>
+                                <button type="button" className="hover:scale-105 transition transform duration-200 cursor-pointer border p-2 rounded bg-[#0e57d6] text-white flex gap-2"><Search /> View Students </button>
                                 <div>
                                     <input
                                         type="text"

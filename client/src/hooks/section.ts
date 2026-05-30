@@ -2,8 +2,12 @@ import { api } from "../utils/api"
 import type { SectionType } from "../types/sections.type"
 
 
-export const getSections = async (): Promise<SectionType[]> => {
-    const response = await fetch(`${api}/section`, {
+export const getSections = async (grade_level_id?: string): Promise<SectionType[]> => {
+
+    //make a optional filter
+    const url = grade_level_id ? `${api}/section?grade_level_id=${grade_level_id}`:  `${api}/section`;
+
+    const response = await fetch(url, {
         method: "GET",
         credentials: "include",
     });

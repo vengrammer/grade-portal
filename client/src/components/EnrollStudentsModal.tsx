@@ -10,7 +10,6 @@ import type { SectionType } from "../types/sections.type"
 import type { SchoolYearType } from "../types/schoolYear.type"
 import { toast } from "react-toastify"
 
-
 interface EnrollStudentsModalProps {
     open: boolean
     setOpen: (value: boolean) => void
@@ -46,6 +45,14 @@ function EnrollStudentsModal({ open, setOpen }: EnrollStudentsModalProps) {
         try {
             const data = await getGradeLevels();
             setGradeLevel(data);
+
+            //when mount set the first data
+            if (data.length > 0) {
+                setFormData((prev) => ({
+                    ...prev,
+                    grade_level_id: data[0]._id,
+                }));
+            }
         } catch (error: any) {
             toast.error(error.message || "Something went wrong")
         }
@@ -54,21 +61,52 @@ function EnrollStudentsModal({ open, setOpen }: EnrollStudentsModalProps) {
     const fetchSchoolYear = async () => {
         try {
             const data = await getSchoolyears();
+            if (data.length > 0) {
+                setFormData((prev) => ({
+                    ...prev,
+                    school_year_id: data[0]._id,
+                }));
+            }
             setSchoolYear(data);
         } catch (error: any) {
             toast.error(error.message || "Something went wrong")
         }
     }
 
+
     useEffect(() => {
         fetchGradeLevels()
         fetchSchoolYear()
     }, [])
 
+    const fetchSections = async () => {
+        try {
+            const data = await getSections(formData.grade_level_id)
+            
+            if (data.length > 0) {
+                setFormData((prev) => ({
+                    ...prev,
+                    section_id: data[0]._id,
+                }));
+            }
+            setSections(data)
+        } catch (error: any) {
+            toast.error(error.message || "Something went wrong")
+        }
+    }
+
+    useEffect(() => {
+        fetchSections()
+    }, [formData.grade_level_id])
+
     function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     }
 
+    function handleSubmit(e: React.SubmitEvent<HTMLFormElement>){
+        e.preventDefault();
+        console.log(formData)
+    }
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
             <div className="absolute inset-0 bg-black/30 backdrop-blur-xs flex items-center justify-center">
@@ -78,7 +116,7 @@ function EnrollStudentsModal({ open, setOpen }: EnrollStudentsModalProps) {
                         <button><X size={20} onClick={() => setOpen(false)} /></button>
                     </div>
                     <div className="flex flex-col ">
-                        <form className="flex flex-col gap-2">
+                        <form onSubmit={handleSubmit} className="flex flex-col gap-2 ">
                             <div className="flex w-full border-b">
                                 <p>Enrollment info</p>
                             </div>
@@ -87,14 +125,14 @@ function EnrollStudentsModal({ open, setOpen }: EnrollStudentsModalProps) {
 
                                 <div className="flex flex-col w-full ">
                                     <label
-                                        htmlFor="schoolyear"
+                                        htmlFor="school_year_id"
                                         className="block text-gray-700 font-semibold"
                                     >
                                         School Year
                                     </label>
                                     <select
-                                        name="schoolyear"
-                                        id="schoolyear"
+                                        name="school_year_id"
+                                        id="school_year_id"
                                         className="w-full px-3 py-2 border rounded-md">
                                         {schoolYear.map((e, index) => (
                                             <option key={index} value={e._id}>{e.school_year}</option>
@@ -109,8 +147,9 @@ function EnrollStudentsModal({ open, setOpen }: EnrollStudentsModalProps) {
                                         Grade Level
                                     </label>
                                     <select
-                                        name="gradelevel"
-                                        id="gradelevel"
+                                        name="grade_level_id"
+                                        id="grade_level_id"
+                                        onChange={handleChange}
                                         className="w-full px-3 py-2 border rounded-md">
                                         {gradeLevel.map((e, index) => (
                                             <option key={index} value={e._id}>{e.name}</option>
@@ -119,23 +158,23 @@ function EnrollStudentsModal({ open, setOpen }: EnrollStudentsModalProps) {
                                 </div>
                                 <div className="flex flex-col w-full ">
                                     <label
-                                        htmlFor="first_name"
+                                        htmlFor="section_id"
                                         className="block text-gray-700 font-semibold"
                                     >
                                         Section
                                     </label>
-                                    <input
-                                        type="text"
-
-                                        id="first_name"
-                                        name="first_name"
-                                        required
-                                        className="w-full px-3 py-2 border rounded-md"
-                                    />
+                                    <select
+                                        name="section_id"
+                                        id="section_id"
+                                        className="w-full px-3 py-2 border rounded-md">
+                                        {sections.map((s, index) => (
+                                            <option key={index} value={s._id}>{s.name}</option>
+                                        ))}
+                                    </select>
                                 </div>
                                 <div className="flex flex-col w-full">
                                     <label
-                                        htmlFor="first_name"
+                                        htmlFor="school_sem"
                                         className="w-full flex items-center justify-center text-gray-700 font-semibold "
                                     >
                                         Semester
@@ -144,7 +183,7 @@ function EnrollStudentsModal({ open, setOpen }: EnrollStudentsModalProps) {
                                         <label>
                                             <input
                                                 type="radio"
-                                                name="gender"
+                                                name="school_sem"
                                                 value="1st"
                                                 checked={sem === "1st"}
                                                 onChange={(e) => setSem(e.target.value)}
@@ -155,7 +194,7 @@ function EnrollStudentsModal({ open, setOpen }: EnrollStudentsModalProps) {
                                         <label>
                                             <input
                                                 type="radio"
-                                                name="gender"
+                                                name="school_sem"
                                                 value="2nd"
                                                 checked={sem === "2nd"}
                                                 onChange={(e) => setSem(e.target.value)}
@@ -171,13 +210,12 @@ function EnrollStudentsModal({ open, setOpen }: EnrollStudentsModalProps) {
                                     <input
                                         type="text"
                                         placeholder="Search student.."
-                                        required
                                         className="w-full px-2 py-2 border rounded-md"
                                     />
                                 </div>
                             </div>
                             {/* Students that not enrolled for*/}
-                            <div className="flex flex-1 flex-col w-full border min-h-140 overflow-auto rounded-xl">
+                            <div className="flex flex-1 flex-col w-full border min-h-130 overflow-auto rounded-xl">
                                 <div className="grid grid-cols-[1fr_1fr_1fr_1fr_100px] bg-gray-400 py-2 px-4 font-semibold" >
                                     <div className="whitespace-nowrap">Account No.</div>
                                     <div className="whitespace-nowrap">Full Name</div>
@@ -194,6 +232,9 @@ function EnrollStudentsModal({ open, setOpen }: EnrollStudentsModalProps) {
                                         <div className="flex items-center justify-center"><Trash2 /></div>
                                     </div>
                                 </div>
+                            </div>
+                            <div className="flex flex-1 w-full item-center justify-end">
+                                <button type="submit" className="border bg-[#081] py-2 px-2 text-white rounded-xl">Enroll Students</button>
                             </div>
                         </form>
                     </div>

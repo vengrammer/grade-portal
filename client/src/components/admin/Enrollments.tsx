@@ -166,7 +166,7 @@ function Enrollments() {
                     </div>
                 </div>
             </div>
-            <EnrollStudentsModal open={openModal} setOpen={setOpenModal} />
+            {openModal && <EnrollStudentsModal open={openModal} setOpen={setOpenModal} />}
         </div>
     )
 }

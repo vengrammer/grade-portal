@@ -1,6 +1,6 @@
 
 export type SectionType = {
-    _id: number;
+    _id: string;
     name: string;
     grade_level_id: string;
     createdAt: string;

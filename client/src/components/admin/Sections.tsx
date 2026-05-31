@@ -12,7 +12,7 @@ import { getGradeLevels } from "../../hooks/gradeLevel";
 import { addSection } from "../../hooks/section";
 import { getSections } from "../../hooks/section";
 
-import LoadingScreen from "../LoadingScreen";
+import LoadingScreen from "../shared/LoadingScreen";
 
 import { motion } from "motion/react"
 interface AddSectionProps {

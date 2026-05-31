@@ -6,7 +6,7 @@ import { getGradingPeriods } from "../../hooks/gradingPeriods";
 import { dateFormatter } from "../../utils/dateFormatter";
 import type { GradingPeriodType } from "../../types/gradingPeriod.type";
 
-import LoadingScreen from "../LoadingScreen";
+import LoadingScreen from "../shared/LoadingScreen";
 
 
 function GradingPeriod() {

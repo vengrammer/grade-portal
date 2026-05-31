@@ -1,8 +1,8 @@
-import { Calendar, CalendarSearch, Plus, PlusCircle, Trash2, UserPlus, UsersRound } from "lucide-react";
+import { CalendarSearch, Plus, Trash2, UserPlus, UsersRound } from "lucide-react";
 
-import EnrollStudentsModal from "../EnrollStudentsModal";
+import EnrollStudentsModal from "../modal/EnrollStudentsModal";
 import { useState } from "react";
-import GradeLevels from "./GradeLevels";
+
 
 const colors: string[] = [
     "#f43f5e",

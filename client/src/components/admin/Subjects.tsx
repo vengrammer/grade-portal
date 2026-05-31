@@ -10,7 +10,7 @@ import { getSubjects, addSubjects } from "../../hooks/subjects";
 import type { SubjectType } from "../../types/subjects.type";
 import { dateFormatter } from "../../utils/dateFormatter";
 
-import LoadingScreen from "../LoadingScreen";
+import LoadingScreen from "../shared/LoadingScreen";
 
 interface AddSubjectProps {
     onClose: () => void;

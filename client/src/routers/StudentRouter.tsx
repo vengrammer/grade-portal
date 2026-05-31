@@ -3,7 +3,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import Profile from "../components/student/Profile";
 import StudentLayout from "../layout/StudentLayout";
 import Grades from "../components/student/Grades";
-import Message from "../components/Message";
+import Message from "../components/shared/Message";
 
 function StudentRouter() {
     return (

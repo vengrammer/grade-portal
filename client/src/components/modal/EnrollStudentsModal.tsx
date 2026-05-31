@@ -1,17 +1,16 @@
-import { Filter, Search, Trash2, X } from "lucide-react"
+import { Filter, LoaderCircle, Search, X } from "lucide-react"
 import { useState, useEffect } from "react"
-
-import { getGradeLevels } from "../hooks/gradeLevel"
-import { getSections } from "../hooks/section"
-import { getSchoolyears } from "../hooks/schoolYear"
-
-import type { GradeLevelType } from "../types/gradeLevel.type"
-import type { SectionType } from "../types/sections.type"
-import type { SchoolYearType } from "../types/schoolYear.type"
 import { toast } from "react-toastify"
 
-import { getAvailableStudentsForEnrollment } from "../hooks/enrollment"
-import type { UserType } from "../types/user.type"
+import type { GradeLevelType } from "../../types/gradeLevel.type"
+import type { SectionType } from "../../types/sections.type"
+import type { SchoolYearType } from "../../types/schoolYear.type"
+import type { UserType } from "../../types/user.type"
+
+import { getAvailableStudentsForEnrollment, enrollStudents } from "../../hooks/enrollment"
+import { getGradeLevels } from "../../hooks/gradeLevel"
+import { getSections } from "../../hooks/section"
+import { getSchoolyears } from "../../hooks/schoolYear"
 
 interface EnrollStudentsModalProps {
     open: boolean
@@ -34,6 +33,7 @@ function EnrollStudentsModal({ open, setOpen }: EnrollStudentsModalProps) {
     const [sections, setSections] = useState<SectionType[]>([])
     const [schoolYear, setSchoolYear] = useState<SchoolYearType[]>([])
     const [availableStudent, setAvailableStudent] = useState<UserType[]>([])
+    const [loading, setLoading] = useState(false);
 
     const [formData, setFormData] = useState<IEnrollment>({
         school_year_id: "",
@@ -154,27 +154,52 @@ function EnrollStudentsModal({ open, setOpen }: EnrollStudentsModalProps) {
         }));
     }
 
-    function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
+    async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
-        console.log(formData)
+        try {
+            const param = {
+                school_year_id: formData.school_year_id,
+                grade_level_id: formData.grade_level_id,
+                school_sem: formData.school_sem,
+                section_id: formData.section_id,
+                student_selected: formData.student_selected
+            }
+
+            if (!formData.school_year_id || !formData.grade_level_id || !formData.school_sem || !formData.section_id) {
+                toast.error("Please select a school year, grade level, school semester and section")
+            }
+            if (formData.student_selected.length === 0) {
+                toast.error("Please select at least one student")
+            }
+
+            setLoading(true)
+
+            const response = await enrollStudents(param)
+
+            toast.success(response.message || "Students enrolled successfully")
+
+        } catch (error: any) {
+            toast.error(error.message || "Something went wrong")
+        }finally {
+            setLoading(false)
+        }
     }
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
+        <div className="fixed inset-0 z-50 flex items-center justify-center ">
             <div className="absolute inset-0 bg-black/30 backdrop-blur-xs flex items-center justify-center">
                 <div className="relative w-full max-w-300 md:mx-4 bg-white md:rounded-xl shadow-xl p-5 max-h-screen overflow-y-auto">
-                    <div className="flex w-full justify-between mb-2">
+                    <div className="flex w-full justify-between md:mb-2">
                         <h2 className="text-xl font-semibold">Enroll A Students </h2>
                         <button><X size={20} onClick={() => setOpen(false)} /></button>
                     </div>
-                    <div className="flex flex-col ">
+                    <div className="flex flex-col pt-2">
                         <form onSubmit={handleSubmit} className="flex flex-col gap-2 ">
-                            <div className="flex w-full border-b">
+                            <div className="flex w-full border-b md:mb-2">
                                 <p>Enrollment info</p>
                             </div>
                             {/* Enrollment info*/}
-                            <div className="flex flex-1 gap-2">
-
+                            <div className=" flex flex-col md:flex-row flex-1 md:gap-2">
                                 <div className="flex flex-col w-full ">
                                     <label
                                         htmlFor="school_year_id"
@@ -258,7 +283,7 @@ function EnrollStudentsModal({ open, setOpen }: EnrollStudentsModalProps) {
                                     </div>
                                 </div>
                             </div>
-                            <div className="flex w-full items-center justify-between px-2 font-semibold mt-5">
+                            <div className="flex  w-full items-center justify-between px-2 font-semibold mt-5">
                                 <button
                                     type="button"
                                     disabled={!formData.school_year_id || !formData.grade_level_id || !formData.school_sem}
@@ -266,7 +291,7 @@ function EnrollStudentsModal({ open, setOpen }: EnrollStudentsModalProps) {
                                     className="hover:scale-105 transition transform duration-200 cursor-pointer border p-2 rounded bg-[#0e57d6] text-white flex gap-2"
                                 >
                                     <Filter />
-                                    View Available Students
+                                    <span className="hidden md:block">View Available Students</span>
                                 </button>
                                 <div className="flex gap-2">
                                     <input
@@ -298,7 +323,7 @@ function EnrollStudentsModal({ open, setOpen }: EnrollStudentsModalProps) {
                                                 <div className="flex items-center justify-center">
                                                     <input
                                                         type="checkbox"
-                                                        className="w-5 h-5  cursor-pointer text-green-600"    
+                                                        className="w-5 h-5  cursor-pointer text-green-600"
                                                         checked={formData.student_selected.includes(s._id)}
                                                         onChange={() => handleToggleStudent(s._id)}
                                                     />
@@ -312,6 +337,18 @@ function EnrollStudentsModal({ open, setOpen }: EnrollStudentsModalProps) {
                             </div>
                         </form>
                     </div>
+                    {loading && (
+                        <div className="absolute top-0 left-0 flex items-center justify-center w-full h-full bg-black/50 bg-opacity-50">
+                            <div className="flex flex-col bg-white w-70 h-50 items-center justify-center rounded-sm">
+
+                                <div className="flex flex-col gap-4 items-center justify-center">
+                                    <LoaderCircle className="text-blue-700 w-10 h-10 animate-spin" />
+                                    <p className="text-blue-700">Enrolling student(s). Please wait...</p>
+                                </div>
+                                <p className="text-red-500 pt-10 ">Do not close or refresh this page.</p>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </div >

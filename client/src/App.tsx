@@ -1,7 +1,7 @@
 
 import { BrowserRouter, Route, Routes } from "react-router-dom"
 import StudentRouter from "./routers/StudentRouter"
-import NotFound from "./components/NotFound"
+import NotFound from "./components/shared/NotFound"
 import LandingPageLayout from "./layout/LandingPageLayout"
 import { Navigate } from "react-router-dom"
 import AdminRouter from "./routers/AdminRouter"

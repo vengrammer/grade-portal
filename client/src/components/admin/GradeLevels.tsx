@@ -10,7 +10,7 @@ import { getGradeLevels, addGradeLevel } from "../../hooks/gradeLevel";
 import type { GradeLevelType } from "../../types/gradeLevel.type";
 import { dateFormatter } from "../../utils/dateFormatter";
 
-import LoadingScreen from "../LoadingScreen";
+import LoadingScreen from "../shared/LoadingScreen";
 
 interface AddGradeLevelProps {
     onClose: () => void;

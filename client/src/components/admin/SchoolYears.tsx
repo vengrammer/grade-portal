@@ -9,7 +9,7 @@ import { getSchoolyears, addSchoolYear } from "../../hooks/schoolYear";
 import type { SchoolYearType } from "../../types/schoolYear.type";
 import { dateFormatter } from "../../utils/dateFormatter";
 
-import LoadingScreen from "../LoadingScreen";
+import LoadingScreen from "../shared/LoadingScreen";
 
 
 function Schoolyears() {

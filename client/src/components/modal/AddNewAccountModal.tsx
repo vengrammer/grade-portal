@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 
 
 import { toast } from "react-toastify";
-import { accountnumber, addAccount } from "../hooks/user";
+import { accountnumber, addAccount } from "../../hooks/user";
 
 
 type roleAccountToAdd = "student" | "teacher" | "admin";

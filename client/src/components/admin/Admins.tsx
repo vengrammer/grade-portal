@@ -8,7 +8,7 @@ import { useState, useEffect } from "react";
 import { dateFormatter } from "../../utils/dateFormatter";
 import type { UserType } from "../../types/user.type";
 
-import AddNewAccountModal from "../AddNewAccountModal";
+import AddNewAccountModal from "../modal/AddNewAccountModal";
 import { getUsersByRole } from "../../hooks/user";
 
 function Admins() {

@@ -1,5 +1,5 @@
 
-import gif from "../assets/gifnotfound.gif";
+import gif from "../../assets/gifnotfound.gif";
 function NotFound(){
     return(
         <div className="w-full h-screen">

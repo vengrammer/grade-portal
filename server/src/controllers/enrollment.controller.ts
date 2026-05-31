@@ -15,6 +15,7 @@ export async function getAvailableStudentsForEnrollment(req: Request, res: Respo
   try {
     const { school_year_id, school_sem, section_id } = req.query;
 
+
     if (typeof school_year_id !== "string" || typeof school_sem !== "string" || typeof section_id !== "string") {
       return res.status(400).json({
         message: "Invalid query parameters",

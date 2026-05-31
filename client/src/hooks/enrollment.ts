@@ -44,7 +44,7 @@ export const getAvailableStudentsForEnrollment = async ({ school_year_id, school
 
 export const enrollStudents = async ({ school_year_id, grade_level_id, school_sem, section_id, student_selected }: IEnrollStudents) => {
 
-    const response = await fetch(`${api}/enrollstudents`, {
+    const response = await fetch(`${api}/enrollment`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",

@@ -1,6 +1,7 @@
-import { Filter, LoaderCircle, Search, X } from "lucide-react"
+import { Filter, LoaderCircle, Search, SendHorizonal, X } from "lucide-react"
 import { useState, useEffect } from "react"
 import { toast } from "react-toastify"
+import Swal from "sweetalert2"
 
 import type { GradeLevelType } from "../../types/gradeLevel.type"
 import type { SectionType } from "../../types/sections.type"
@@ -154,9 +155,11 @@ function EnrollStudentsModal({ open, setOpen }: EnrollStudentsModalProps) {
         }));
     }
 
-    async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
+    function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
-        try {
+
+
+
             const param = {
                 school_year_id: formData.school_year_id,
                 grade_level_id: formData.grade_level_id,
@@ -167,22 +170,40 @@ function EnrollStudentsModal({ open, setOpen }: EnrollStudentsModalProps) {
 
             if (!formData.school_year_id || !formData.grade_level_id || !formData.school_sem || !formData.section_id) {
                 toast.error("Please select a school year, grade level, school semester and section")
+                return;
             }
             if (formData.student_selected.length === 0) {
                 toast.error("Please select at least one student")
+                return;
             }
 
-            setLoading(true)
+            Swal.fire({
+                title: "Are you sure you want to enroll selected students?",
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, Enroll!",
+            }).then(async (result) => {
+                if (!result.isConfirmed) return;
 
-            const response = await enrollStudents(param)
+                try {
+                    setLoading(true);
 
-            toast.success(response.message || "Students enrolled successfully")
+                    const response = await enrollStudents(param);
 
-        } catch (error: any) {
-            toast.error(error.message || "Something went wrong")
-        }finally {
-            setLoading(false)
-        }
+                    toast.success(
+                        response.message || "Students enrolled successfully"
+                    );
+
+                    setOpen(false);
+                } catch (error: any) {
+                    toast.error(error.message || "Failed to enroll students");
+                } finally {
+                    setLoading(false);
+                }
+            });
+
     }
 
     return (
@@ -210,6 +231,7 @@ function EnrollStudentsModal({ open, setOpen }: EnrollStudentsModalProps) {
                                     <select
                                         name="school_year_id"
                                         id="school_year_id"
+                                        required
                                         onChange={handleChange}
                                         className="w-full px-3 py-2 border rounded-md">
                                         {schoolYear.map((e, index) => (
@@ -227,6 +249,7 @@ function EnrollStudentsModal({ open, setOpen }: EnrollStudentsModalProps) {
                                     <select
                                         name="grade_level_id"
                                         id="grade_level_id"
+                                        required
                                         onChange={handleChange}
                                         className="w-full px-3 py-2 border rounded-md">
                                         {gradeLevel.map((e, index) => (
@@ -244,6 +267,7 @@ function EnrollStudentsModal({ open, setOpen }: EnrollStudentsModalProps) {
                                     <select
                                         name="section_id"
                                         id="section_id"
+                                        required
                                         onChange={handleChange}
                                         className="w-full px-3 py-2 border rounded-md">
                                         {sections.map((s, index) => (
@@ -303,7 +327,7 @@ function EnrollStudentsModal({ open, setOpen }: EnrollStudentsModalProps) {
                                 </div>
                             </div>
                             {/* Students that not enrolled for*/}
-                            <div className="flex flex-1 flex-col w-full border min-h-130 overflow-auto rounded-xl">
+                            <div className="flex flex-1 flex-col w-full border min-h-120 overflow-auto rounded-xl">
                                 <div className="grid grid-cols-[1fr_1fr_1fr_1fr_100px] bg-gray-400 py-2 px-4 font-semibold" >
                                     <div className="whitespace-nowrap">Account No.</div>
                                     <div className="whitespace-nowrap">Full Name</div>
@@ -323,6 +347,7 @@ function EnrollStudentsModal({ open, setOpen }: EnrollStudentsModalProps) {
                                                 <div className="flex items-center justify-center">
                                                     <input
                                                         type="checkbox"
+
                                                         className="w-5 h-5  cursor-pointer text-green-600"
                                                         checked={formData.student_selected.includes(s._id)}
                                                         onChange={() => handleToggleStudent(s._id)}
@@ -333,7 +358,9 @@ function EnrollStudentsModal({ open, setOpen }: EnrollStudentsModalProps) {
                                 </div>
                             </div>
                             <div className="flex flex-1 w-full item-center justify-end">
-                                <button type="submit" className="border bg-[#081] py-2 px-2 text-white rounded-xl">Enroll Students</button>
+                                <button
+                                    type="submit"
+                                    className=" border-2 hover:scale-105 transition transform duration-200 cursor-pointer py-2 px-8 text-white rounded-sm bg-green-700 flex items-center gap-2">Submit <SendHorizonal /></button>
                             </div>
                         </form>
                     </div>

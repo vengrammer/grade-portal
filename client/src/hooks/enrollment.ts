@@ -1,0 +1,35 @@
+
+import { api } from "../utils/api";
+import type { UserType } from "../types/user.type";
+
+type sem = "1st" | "2nd";
+
+
+interface IGetAvailableStudentsForEnrollment {
+    school_year_id: string;
+    school_sem: sem;
+    section_id: string;
+}
+
+
+export const getAvailableStudentsForEnrollment = async ({ school_year_id, school_sem, section_id }: IGetAvailableStudentsForEnrollment): Promise<UserType[]> => {
+
+    const url = `${api}/getnotenrolledstudents?school_year_id=${school_year_id}&school_sem=${school_sem}&section_id=${section_id}`;
+    const response = await fetch(`${url}`, {
+        method: "GET",
+        credentials: "include",
+    });
+
+    // check if the content type is application/json... meaning it will not show an html error page
+    const contentType = response.headers.get("content-type");
+    if (!contentType || !contentType.includes("application/json")) {
+        throw new Error("Server error. Please try again later.");
+    }
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw data;
+    }
+    return data;
+}

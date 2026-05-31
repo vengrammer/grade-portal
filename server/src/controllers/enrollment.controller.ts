@@ -2,18 +2,16 @@ import { Enrollment } from "../models/Enrollment";
 import { Types } from "mongoose";
 import { Request, Response } from "express";
 import { User } from "../models/User";
-type sem = "1st" | "2nd";
-
-interface IGetAvailableStudentsForEnrollment {
-    school_year_id: Types.ObjectId,
-    grade_level_id: Types.ObjectId,
-    school_sem: sem,
-    section_id: Types.ObjectId,
-}
 
 export async function getAvailableStudentsForEnrollment(req: Request, res: Response) {
   try {
-    const { school_year_id, school_sem, section_id } = req.body as IGetAvailableStudentsForEnrollment;
+    const {school_year_id,school_sem,section_id} = req.query;
+
+    if (typeof school_year_id !== "string" || typeof school_sem !== "string" || typeof section_id !== "string") {
+      return res.status(400).json({
+        message: "Invalid query parameters",
+      });
+    }
 
     const students = await User.aggregate([
       {
@@ -51,8 +49,8 @@ export async function getAvailableStudentsForEnrollment(req: Request, res: Respo
       },
     ]);
 
-    res.json(students);
+    return res.status(200).json(students);
   } catch (error: any) {
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message });
   }
 }

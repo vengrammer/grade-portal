@@ -13,10 +13,10 @@ interface IEnrollmentParams {
 
 export async function getAvailableStudentsForEnrollment(req: Request, res: Response) {
   try {
-    const { school_year_id, school_sem, section_id } = req.query;
+    const { school_year_id, school_sem } = req.query;
 
 
-    if (typeof school_year_id !== "string" || typeof school_sem !== "string" || typeof section_id !== "string") {
+    if (typeof school_year_id !== "string" || typeof school_sem !== "string") {
       return res.status(400).json({
         message: "Invalid query parameters",
       });
@@ -41,7 +41,6 @@ export async function getAvailableStudentsForEnrollment(req: Request, res: Respo
                     { $eq: ["$account_id", "$$userId"] },
                     { $eq: ["$school_year_id", new Types.ObjectId(school_year_id)] },
                     { $eq: ["$school_sem", school_sem] },
-                    { $eq: ["$section_id", new Types.ObjectId(section_id)] },
                   ],
                 },
               },
@@ -65,22 +64,39 @@ export async function getAvailableStudentsForEnrollment(req: Request, res: Respo
 }
 
 export async function enrollStudents(req: Request, res: Response) {
-  try{
-    const { school_year_id, grade_level_id, school_sem, section_id, student_selected } = req.body as IEnrollmentParams;
-    const enrollstudents = await Enrollment.insertMany(student_selected.map((student_id) => ({
-      account_id: new Types.ObjectId(student_id),
-      school_year_id: new Types.ObjectId(school_year_id),
-      grade_level_id: new Types.ObjectId(grade_level_id),
-      school_sem: school_sem,
-      section_id: new Types.ObjectId(section_id),
-    })))
 
-    if (enrollstudents) {
-      return res.status(200).json({ message: "Students enrolled successfully" });
-    } else {
-      return res.status(400).json({ message: "Failed to enroll students" });
+
+
+
+
+  try {
+
+    const { school_year_id, grade_level_id, school_sem, section_id, student_selected } = req.body as IEnrollmentParams;
+    
+    await Enrollment.insertMany(
+      student_selected.map((student_id) => ({
+        account_id: new Types.ObjectId(student_id),
+        school_year_id: new Types.ObjectId(school_year_id),
+        grade_level_id: new Types.ObjectId(grade_level_id),
+        school_sem,
+        section_id: new Types.ObjectId(section_id),
+      }))
+    );
+
+    return res.status(200).json({
+      message: "Students enrolled successfully",
+    });
+
+  } catch (error: any) {
+
+    if (error.code === 11000) {
+      return res.status(400).json({
+        message: "One or more students are already enrolled for this school year and semester",
+      });
     }
-  }catch (error: any) {
-    return res.status(500).json({ message: error.message });
+
+    return res.status(500).json({
+      message: error.message,
+    });
   }
 }

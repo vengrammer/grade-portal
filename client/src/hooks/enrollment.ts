@@ -8,7 +8,6 @@ type sem = "1st" | "2nd";
 interface IGetAvailableStudentsForEnrollment {
     school_year_id: string;
     school_sem: sem;
-    section_id: string;
 }
 
 interface IEnrollStudents {
@@ -20,9 +19,9 @@ interface IEnrollStudents {
 }
 
 
-export const getAvailableStudentsForEnrollment = async ({ school_year_id, school_sem, section_id }: IGetAvailableStudentsForEnrollment): Promise<UserType[]> => {
+export const getAvailableStudentsForEnrollment = async ({ school_year_id, school_sem}: IGetAvailableStudentsForEnrollment): Promise<UserType[]> => {
 
-    const url = `${api}/getnotenrolledstudents?school_year_id=${school_year_id}&school_sem=${school_sem}&section_id=${section_id}`;
+    const url = `${api}/getnotenrolledstudents?school_year_id=${school_year_id}&school_sem=${school_sem}`;
     const response = await fetch(`${url}`, {
         method: "GET",
         credentials: "include",

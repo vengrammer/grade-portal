@@ -110,10 +110,9 @@ function EnrollStudentsModal({ open, setOpen }: EnrollStudentsModalProps) {
             const param = {
                 school_year_id: formData.school_year_id,
                 school_sem: formData.school_sem,
-                section_id: formData.section_id
             }
-            if (!formData.school_year_id || !formData.school_sem || !formData.section_id) {
-                toast.error("Please select a school year, school semester and section")
+            if (!formData.school_year_id || !formData.school_sem ) {
+                toast.error("Please select a school year, and school semester to view available student")
             }
 
             const availableStudent = await getAvailableStudentsForEnrollment(param);

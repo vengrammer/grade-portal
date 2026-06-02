@@ -44,7 +44,6 @@ const enrollmentSchema = new Schema<IEnrollment>(
 /*
 Prevent duplicate enrollment per year AND section
 */
-
 enrollmentSchema.index(
     {
         school_year_id: 1,

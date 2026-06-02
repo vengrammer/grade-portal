@@ -7,12 +7,6 @@ export const validateFindUserNotEnrolled = [
         .isMongoId()
         .withMessage("Invalid school year ID"),
 
-    query("section_id")
-        .notEmpty()
-        .withMessage("Select a section")
-        .isMongoId()
-        .withMessage("Invalid section ID"),
-
     query("school_sem")
         .notEmpty()
         .withMessage("Select a semester")

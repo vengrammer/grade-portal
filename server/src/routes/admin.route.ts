@@ -5,7 +5,7 @@ import { addSubject, getSubjects } from "../controllers/subject.controller";
 import { getSchoolyears, addSchoolYear } from "../controllers/schoolYear.controller";
 import { getGradingPeriods } from "../controllers/gradingPeriod.controller";
 import { addAccount, getUsersByRole, getGeneratedNumber } from "../controllers/user.controller";
-import { getAvailableStudentsForEnrollment, enrollStudents } from "../controllers/enrollment.controller";
+import { getAvailableStudentsForEnrollment, enrollStudents, getEnrollStudents } from "../controllers/enrollment.controller";
 
 
 //validation middleware
@@ -41,6 +41,8 @@ adminRouter.get("/users", getUsersByRole);
 
 //enrollment
 adminRouter.get("/getnotenrolledstudents", validateFindUserNotEnrolled, validate, getAvailableStudentsForEnrollment);
+
+adminRouter.get("/enrollment", getEnrollStudents);
 adminRouter.post("/enrollment", validateBeforeEnroll, validate, enrollStudents);
 
 //account number generator

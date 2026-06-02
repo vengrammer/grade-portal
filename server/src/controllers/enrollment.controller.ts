@@ -21,16 +21,14 @@ export async function getEnrollStudents(req: Request, res: Response) {
     search_text,
   } = req.query;
 
-  //validation
-  if (!school_year_id || typeof school_year_id !== "string") {
-    return res.status(400).json({ message: "School year is required" });
-  }
-
   //ganito ang way pag d sure kung ilan ang magigin params sa query
   const match: any = {
-    school_year_id: new Types.ObjectId(school_year_id),
     status: "enrolled",
   };
+
+  if(school_year_id && typeof school_year_id === "string"){
+    match.school_year_id = new Types.ObjectId(school_year_id);
+  }
 
   if (grade_level_id && typeof grade_level_id === "string") {
     match.grade_level_id = new Types.ObjectId(grade_level_id);
@@ -77,7 +75,7 @@ export async function getEnrollStudents(req: Request, res: Response) {
       },
       {
         $unwind: {
-          path: "$gradelevels",
+          path: "$gradelevel",
           preserveNullAndEmptyArrays: true,
         },
       },
@@ -96,50 +94,75 @@ export async function getEnrollStudents(req: Request, res: Response) {
         },
       },
       {
-        $project:{
+        $lookup: {
+          from: "schoolyears",
+          localField: "school_year_id",
+          foreignField: "_id",
+          as: "schoolyear",
+        },
+      },
+      {
+        $unwind: {
+          path: "$schoolyear",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $project: {
           _id: 1,
-          "student.account_number": 1,
-          "student.first_name": 1,
-          "student.last_name": 1,
-          "student.middle_name": 1,
-          "gradelevel.name": 1,
-          "section.name": 1,
-          created_at: 1
+          createdAt: 1,
+          school_sem: 1,
+          student: {
+            _id: 1,
+            account_number: 1,
+            first_name: 1,
+            last_name: 1,
+            middle_name: 1,
+          },
+          gradelevel: {
+            name: 1,
+          },
+          section: {
+            name: 1,
+          },
+          schoolyear: {
+            school_year: 1,
+          },
         }
       },
       ...(search
         ? [
-            {
-              $match: {
-                $or: [
-                  {
-                    "student.first_name": {
-                      $regex: search,
-                      $options: "i",
-                    },
+          {
+            $match: {
+              $or: [
+                {
+                  "student.first_name": {
+                    $regex: search,
+                    $options: "i",
                   },
-                  {
-                    "student.last_name": {
-                      $regex: search,
-                      $options: "i",
-                    },
+                },
+                {
+                  "student.last_name": {
+                    $regex: search,
+                    $options: "i",
                   },
-                  {
-                    "student.middle_name": {
-                      $regex: search,
-                      $options: "i",
-                    },
+                },
+                {
+                  "student.middle_name": {
+                    $regex: search,
+                    $options: "i",
                   },
-                  {
-                    "student.account_number": {
-                      $regex: search,
-                      $options: "i",
-                    },
+                },
+                {
+                  "student.account_number": {
+                    $regex: search,
+                    $options: "i",
                   },
-                ],
-              },
+                },
+              ],
             },
-          ]
+          },
+        ]
         : []),
     ]);
 

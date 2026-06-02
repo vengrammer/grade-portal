@@ -45,7 +45,7 @@ export const getAllEnrolledStudents = async ({ school_year_id, grade_level_id, s
         params.append("section_id", section_id);
     }
     if (search_text) {
-        params.append("search_text", search_text);
+        params.append("search_text", search_text?.trim());
     }
     const url = `${api}/enrollment?${params.toString()}`;
     const response = await fetch(`${url}`, {

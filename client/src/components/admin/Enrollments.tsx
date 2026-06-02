@@ -1,8 +1,8 @@
-import { Filter, Plus, Search, Trash2 } from "lucide-react";
+import { LoaderCircleIcon, Plus, Search, Trash2 } from "lucide-react";
 
 import EnrollStudentsModal from "../modal/EnrollStudentsModal";
 import React, { useEffect, useState } from "react";
-
+    
 import { getAllEnrolledStudents } from "../../hooks/enrollment";
 import { toast } from "react-toastify";
 import LoadingScreen from "../shared/LoadingScreen";
@@ -12,6 +12,10 @@ import { dateFormatter } from "../../utils/dateFormatter";
 import { getSchoolyears } from "../../hooks/schoolYear";
 import { getGradeLevels } from "../../hooks/gradeLevel";
 import { getSections } from "../../hooks/section";
+
+import type { SchoolYearType } from "../../types/schoolYear.type";
+import type { GradeLevelType } from "../../types/gradeLevel.type";
+import type { SectionType } from "../../types/sections.type";
 
 
 interface IEnrolledStudents {
@@ -49,14 +53,17 @@ interface IFilter {
 function Enrollments() {
 
     //filter data
-    const [schoolYear, setSchoolYear] = useState<string>("");
-    const [gradeLevel, setGradeLevel] = useState<string>("");
-    const [schoolSem, setSchoolSem] = useState<string>("");
-    const [section, setSection] = useState<string>("");
+    const [schoolYear, setSchoolYear] = useState<SchoolYearType[]>([]);
+    const [gradeLevel, setGradeLevel] = useState<GradeLevelType[]>([]);
+    const [section, setSection] = useState<SectionType[]>([]);
 
     const [openModal, setOpenModal] = useState(false);
     const [enrolledStudents, setEnrolledStudents] = useState<IEnrolledStudents[]>([]);
     const [loading, setLoading] = useState(false);
+
+    const [debouncedSearch, setDebouncedSearch] = useState("");
+
+    const [loadingTable, setLoadingTable] = useState(false);
 
     const [filterData, setFilterData] = useState<IFilter>({
         school_year_id: "",
@@ -66,48 +73,57 @@ function Enrollments() {
         search_text: "",
     });
 
-    const changeSectionWhenGradeLevelChanges = async () => {
-        try {
-            setLoading(true);
-            const data = await getSections(gradeLevel);
-            setSection(data[0]._id);
-        } catch (error: any) {
-            toast.error(error.message || "Something went wrong");
-        } finally {
-            setLoading(false);
-        }
-    }
-
-    const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
-
-        if(name === "grade_level_id") changeSectionWhenGradeLevelChanges();
-
         setFilterData((prevData) => ({
             ...prevData,
             [name]: value,
         }));
     };
 
-    const fetchEnrolledStudents = async () => {
+
+    const fetchEnrolledStudents = async (filters: IFilter) => {
         try {
-            setLoading(true);
-            const data = await getAllEnrolledStudents(filterData);
+            setLoadingTable(true);
+            const data = await getAllEnrolledStudents(filters);
             setEnrolledStudents(data);
         } catch (error: any) {
             toast.error(error.message || "Something went wrong");
         } finally {
-            setLoading(false);
+            setLoadingTable(false);
         }
-    }
+    };
+
+    //debounce search delay a search by one second 
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearch(filterData.search_text?.trim() || "");
+        }, 1000);
+
+        return () => clearTimeout(timer);
+    }, [filterData.search_text]);
+
+    useEffect(() => {
+        fetchEnrolledStudents({
+            ...filterData,
+            search_text: debouncedSearch,
+        });
+    }, [
+        debouncedSearch,
+        filterData.school_year_id,
+        filterData.grade_level_id,
+        filterData.section_id,
+        filterData.school_sem,
+    ]);
+
 
     const fetchSchoolYearAndGradelevel = async () => {
         try {
             setLoading(true);
             const data = await getSchoolyears();
-            setSchoolYear(data[0]._id);
+            setSchoolYear(data);
             const data2 = await getGradeLevels();
-            setGradeLevel(data2[0]._id);
+            setGradeLevel(data2);
         } catch (error: any) {
             toast.error(error.message || "Something went wrong");
         } finally {
@@ -116,14 +132,30 @@ function Enrollments() {
     }
 
     useEffect(() => {
-        fetchEnrolledStudents();
+        fetchSchoolYearAndGradelevel();
+        fetchEnrolledStudents({
+            ...filterData,
+            search_text: debouncedSearch,
+        });
     }, []);
+
+    const fetchSection = async () => {
+        if (!filterData.grade_level_id) return;
+        if (filterData.grade_level_id === "All") return;
+        try {
+            const data = await getSections(filterData.grade_level_id);
+            setSection(data);
+        } catch (error: any) {
+            toast.error(error.message || "Something went wrong");
+        }
+    }
 
     useEffect(() => {
-        fetchSchoolYearAndGradelevel();
-    }, []);
-
-    
+        if(filterData.grade_level_id === ""){
+            setSection([]);
+        };
+        fetchSection();
+    }, [filterData.grade_level_id])
 
     return (
         <div className="flex relative flex-col flex-1 min-h-0 w-full p-4">
@@ -144,23 +176,20 @@ function Enrollments() {
                     <div className="flex-1  rounded flex-col flex ">
                         <div className="flex w-full items-center justify-between pb-2">
                             {/*search bar and filter*/}
-                            <div className="flex flex-1 flex-row-reverse justify-between gap-2 p-2 border rounded-lg bg-white shadow-sm">
-                                <div className="flex gap-2">
+                            <div className="flex flex-1 flex-row-reverse  justify-between gap-90 p-2 border rounded-lg bg-white shadow-sm">
+                                <div className="flex gap-2 flex-1 ">
                                     <div className="relative flex-1">
                                         <Search
                                             size={18}
                                             className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
                                         />
                                         <input
+                                            onChange={(e) => setFilterData({ ...filterData, search_text: e.target.value })}
                                             type="text"
-                                            placeholder="Search student..."
+                                            placeholder="Search student by account number or fullname..."
                                             className="w-full pl-10 pr-3 py-1 border rounded-md"
                                         />
                                     </div>
-
-                                    <button className="px-4 py-1 bg-blue-700 text-white rounded-md hover:bg-blue-600">
-                                        Search
-                                    </button>
                                 </div>
                                 <div className="flex flex-wrap items-center gap-3">
 
@@ -168,26 +197,30 @@ function Enrollments() {
                                         <label className="text-sm font-medium text-blue-700">
                                             School Year
                                         </label>
-                                       { <select className="px-2 py-1 border rounded-md">
+                                        <select
+                                            name="school_year_id"
+                                            onChange={handleFilterChange}
+                                            className="px-2 py-1 border rounded-md">
                                             <option value="">All</option>
-                                            <option>6</option>
-                                            <option>7</option>
-                                            <option>8</option>
-                                            <option>9</option>
-                                            <option>10</option>
-                                        </select>}
+                                            {schoolYear.length === 0 ? <option disabled>No School Year</option>
+                                                : schoolYear.map((schoolYear, index) => (
+                                                    <option key={index} value={schoolYear._id}>{schoolYear.school_year}</option>
+                                                ))}
+                                        </select>
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <label className="text-sm font-medium text-blue-700">
                                             Grade Level
                                         </label>
-                                        <select className="px-2 py-1 border rounded-md">
-                                            <option>All</option>
-                                            <option>6</option>
-                                            <option>7</option>
-                                            <option>8</option>
-                                            <option>9</option>
-                                            <option>10</option>
+                                        <select
+                                            name="grade_level_id"
+                                            onChange={handleFilterChange}
+                                            className="px-2 py-1 border rounded-md">
+                                            <option value="">All</option>
+                                            {gradeLevel.length === 0 ? <option disabled>No Grade Level</option>
+                                                : gradeLevel.map((grade, index) => (
+                                                    <option key={index} value={grade._id}>{grade.name}</option>
+                                                ))}
                                         </select>
                                     </div>
 
@@ -195,8 +228,15 @@ function Enrollments() {
                                         <label className="text-sm font-medium text-blue-700">
                                             Section
                                         </label>
-                                        <select className="px-2 py-1 border rounded-md">
-                                            <option>All</option>
+                                        <select
+                                            name="section_id"
+                                            onChange={handleFilterChange}
+                                            className="px-2 py-1 border rounded-md">
+                                            <option value="">All</option>
+                                            {section.length === 0 ? <option disabled>No Selected Grade Level</option>
+                                                : section.map((section, index) => (
+                                                    <option key={index} value={section._id}>{section.name}</option>
+                                                ))}
                                         </select>
                                     </div>
 
@@ -204,17 +244,15 @@ function Enrollments() {
                                         <label className="text-sm font-medium text-blue-700">
                                             Semester
                                         </label>
-                                        <select className="px-2 py-1 border rounded-md">
-                                            <option>All</option>
-                                            <option>1st</option>
-                                            <option>2nd</option>
+                                        <select
+                                            name="school_sem"
+                                            onChange={handleFilterChange}
+                                            className="px-2 py-1 border rounded-md">
+                                            <option value="">All</option>
+                                            <option value="1st">1st</option>
+                                            <option value="2nd">2nd</option>
                                         </select>
                                     </div>
-
-                                    <button className="flex items-center gap-2 px-4 py-1 bg-gray-700 text-white rounded-md hover:bg-gray-600">
-                                        <Filter size={18} />
-                                        Apply
-                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -232,22 +270,23 @@ function Enrollments() {
                             </div>
                         </div>
                         {/*list of students enrolled*/}
-                        <div className="flex flex-1 w-full flex-col border min-h-0 overflow-auto">
-                            {enrolledStudents.length === 0 ?
-                                <div className="flex flex-1 items-center justify-center">No enrolled students</div>
-                                : enrolledStudents.map((enroll, index) =>
-                                (<div key={enroll._id} className="grid  grid-cols-[50px_1fr_1fr_1fr_1fr_1fr_1fr_1fr_40px] py-3 px-3 border-b hover:bg-gray-100 ">
-                                    <div>{index + 1}</div>
-                                    <div>{enroll.schoolyear.school_year}</div>
-                                    <div>{enroll.student.account_number}</div>
-                                    <div>{enroll.student.last_name}, {enroll.student.first_name}, {enroll.student.middle_name}</div>
-                                    <div>{enroll.gradelevel.name}</div>
-                                    <div>{enroll.section.name}</div>
-                                    <div>{enroll.school_sem}</div>
-                                    <div>{dateFormatter(enroll.createdAt)}</div>
-                                    <div className="flex items-center justify-center"><Trash2 /></div>
-                                </div>))}
-                        </div>
+                        {loadingTable ? (<div className="flex flex-col gap-2 flex-1 items-center justify-center"><LoaderCircleIcon size={70} className="animate-spin text-blue-500" /><p>Loading enrolled students</p></div>)
+                            : (<div className="flex flex-1 w-full flex-col border min-h-0 overflow-auto">
+                                {enrolledStudents.length === 0 ?
+                                    <div className="flex flex-1 items-center justify-center">No enrolled students found</div>
+                                    : enrolledStudents.map((enroll, index) =>
+                                    (<div key={enroll._id} className="grid  grid-cols-[50px_1fr_1fr_1fr_1fr_1fr_1fr_1fr_40px] py-3 px-3 border-b hover:bg-gray-100 ">
+                                        <div>{index + 1}</div>
+                                        <div>{enroll.schoolyear.school_year}</div>
+                                        <div>{enroll.student.account_number}</div>
+                                        <div>{enroll.student.last_name}, {enroll.student.first_name}, {enroll.student.middle_name}</div>
+                                        <div>{enroll.gradelevel.name}</div>
+                                        <div>{enroll.section.name}</div>
+                                        <div>{enroll.school_sem}</div>
+                                        <div>{dateFormatter(enroll.createdAt)}</div>
+                                        <div className="flex items-center justify-center"><Trash2 /></div>
+                                    </div>))}
+                            </div>)}
                     </div>
                 </div>
             </div>

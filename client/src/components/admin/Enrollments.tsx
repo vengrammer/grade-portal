@@ -9,6 +9,10 @@ import LoadingScreen from "../shared/LoadingScreen";
 import { dateFormatter } from "../../utils/dateFormatter";
 
 
+import { getSchoolyears } from "../../hooks/schoolYear";
+import { getGradeLevels } from "../../hooks/gradeLevel";
+import { getSections } from "../../hooks/section";
+
 
 interface IEnrolledStudents {
     _id: string,
@@ -43,6 +47,13 @@ interface IFilter {
 
 
 function Enrollments() {
+
+    //filter data
+    const [schoolYear, setSchoolYear] = useState<string>("");
+    const [gradeLevel, setGradeLevel] = useState<string>("");
+    const [schoolSem, setSchoolSem] = useState<string>("");
+    const [section, setSection] = useState<string>("");
+
     const [openModal, setOpenModal] = useState(false);
     const [enrolledStudents, setEnrolledStudents] = useState<IEnrolledStudents[]>([]);
     const [loading, setLoading] = useState(false);
@@ -55,8 +66,23 @@ function Enrollments() {
         search_text: "",
     });
 
+    const changeSectionWhenGradeLevelChanges = async () => {
+        try {
+            setLoading(true);
+            const data = await getSections(gradeLevel);
+            setSection(data[0]._id);
+        } catch (error: any) {
+            toast.error(error.message || "Something went wrong");
+        } finally {
+            setLoading(false);
+        }
+    }
+
     const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
+
+        if(name === "grade_level_id") changeSectionWhenGradeLevelChanges();
+
         setFilterData((prevData) => ({
             ...prevData,
             [name]: value,
@@ -74,9 +100,30 @@ function Enrollments() {
             setLoading(false);
         }
     }
+
+    const fetchSchoolYearAndGradelevel = async () => {
+        try {
+            setLoading(true);
+            const data = await getSchoolyears();
+            setSchoolYear(data[0]._id);
+            const data2 = await getGradeLevels();
+            setGradeLevel(data2[0]._id);
+        } catch (error: any) {
+            toast.error(error.message || "Something went wrong");
+        } finally {
+            setLoading(false);
+        }
+    }
+
     useEffect(() => {
         fetchEnrolledStudents();
     }, []);
+
+    useEffect(() => {
+        fetchSchoolYearAndGradelevel();
+    }, []);
+
+    
 
     return (
         <div className="flex relative flex-col flex-1 min-h-0 w-full p-4">
@@ -92,7 +139,6 @@ function Enrollments() {
                 </button>
             </div>
             <div className="flex flex-1 bg-[#ccc1c1] rounded min-h-0">
-                {/*enrollment details*/}
                 <div className="flex flex-1 flex-col m-2 rounded overflow-auto p-2 gap-2  ">
 
                     <div className="flex-1  rounded flex-col flex ">
@@ -116,22 +162,20 @@ function Enrollments() {
                                         Search
                                     </button>
                                 </div>
-
-                                {/* Filters */}
                                 <div className="flex flex-wrap items-center gap-3">
 
                                     <div className="flex items-center gap-2">
                                         <label className="text-sm font-medium text-blue-700">
                                             School Year
                                         </label>
-                                        <select className="px-2 py-1 border rounded-md">
-                                            <option>All</option>
+                                       { <select className="px-2 py-1 border rounded-md">
+                                            <option value="">All</option>
                                             <option>6</option>
                                             <option>7</option>
                                             <option>8</option>
                                             <option>9</option>
                                             <option>10</option>
-                                        </select>
+                                        </select>}
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <label className="text-sm font-medium text-blue-700">
@@ -177,8 +221,8 @@ function Enrollments() {
                         <div className="flex border-y flex-col  w-full rounded  ">
                             <div className="grid grid-cols-[50px_1fr_1fr_1fr_1fr_1fr_1fr_1fr_40px] py-2 px-4 bg-gray-600 text-white">
                                 <div>No.</div>
-                                <div>Account No.</div>
                                 <div>School Year</div>
+                                <div>Account No.</div>
                                 <div>Full Name.</div>
                                 <div>Grade Level</div>
                                 <div>Section</div>
@@ -189,20 +233,20 @@ function Enrollments() {
                         </div>
                         {/*list of students enrolled*/}
                         <div className="flex flex-1 w-full flex-col border min-h-0 overflow-auto">
-                            {enrolledStudents.length === 0 ? 
-                            <div className="flex flex-1 items-center justify-center">No enrolled students</div> 
-                            : enrolledStudents.map((enroll, index) => 
-                            (<div key={enroll._id} className="grid grid-cols-[50px_1fr_1fr_1fr_1fr_1fr_1fr_1fr_40px] py-2 px-4 border-b">
-                                <div>{index + 1}</div>
-                                <div>{enroll.schoolyear.school_year}</div>
-                                <div>{enroll.student.account_number}</div>
-                                <div>{enroll.student.last_name}, {enroll.student.first_name}, {enroll.student.middle_name}</div>
-                                <div>{enroll.gradelevel.name}</div>
-                                <div>{enroll.section.name}</div>
-                                <div>{enroll.school_sem}</div>
-                                <div>{dateFormatter(enroll.createdAt)}</div>
-                                <div className="flex items-center justify-center"><Trash2 /></div>
-                            </div>))}
+                            {enrolledStudents.length === 0 ?
+                                <div className="flex flex-1 items-center justify-center">No enrolled students</div>
+                                : enrolledStudents.map((enroll, index) =>
+                                (<div key={enroll._id} className="grid  grid-cols-[50px_1fr_1fr_1fr_1fr_1fr_1fr_1fr_40px] py-3 px-3 border-b hover:bg-gray-100 ">
+                                    <div>{index + 1}</div>
+                                    <div>{enroll.schoolyear.school_year}</div>
+                                    <div>{enroll.student.account_number}</div>
+                                    <div>{enroll.student.last_name}, {enroll.student.first_name}, {enroll.student.middle_name}</div>
+                                    <div>{enroll.gradelevel.name}</div>
+                                    <div>{enroll.section.name}</div>
+                                    <div>{enroll.school_sem}</div>
+                                    <div>{dateFormatter(enroll.createdAt)}</div>
+                                    <div className="flex items-center justify-center"><Trash2 /></div>
+                                </div>))}
                         </div>
                     </div>
                 </div>

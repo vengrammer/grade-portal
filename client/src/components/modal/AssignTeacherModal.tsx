@@ -5,6 +5,8 @@ import { getSchoolyears } from "../../hooks/schoolYear"
 import { getSections } from "../../hooks/section"
 import { getUsersByRole } from "../../hooks/user"
 
+import { assingTeacher } from "../../hooks/teacherAssingment"
+
 
 import type { SectionType } from "../../types/sections.type"
 import type { SchoolYearType } from "../../types/schoolYear.type"
@@ -17,7 +19,7 @@ import { toast } from "react-toastify"
 interface IModal {
     open: boolean
     setOpen: (value: boolean) => void
-    refeacth?: () => void
+    refeacth: () => void
 }
 
 interface ITeacherAssignmet {
@@ -38,11 +40,13 @@ function AssignTeacherModal({ open, setOpen, refeacth }: IModal) {
 
     if (!open) return null
 
-    const [schoolYear, setSchoolYear] = useState<SchoolYearType[]>([])
-    const [subjects, setSubjects] = useState<SubjectType[]>([])
-    const [section, setSection] = useState<SectionType[]>([])
-    const [teacher, setTeacher] = useState<UserType[]>([])
+    const [schoolYear, setSchoolYear] = useState<SchoolYearType[]>([]);
+    const [subjects, setSubjects] = useState<SubjectType[]>([]);
+    const [section, setSection] = useState<SectionType[]>([]);
+    const [teacher, setTeacher] = useState<UserType[]>([]);
+    const [loading, setLoading] = useState(false);
 
+    const [formErrors, setFormErrors] = useState<Record<string, string>>({})
     const [error, setError] = useState("")
 
     const feacthSchoolYear = async () => {
@@ -73,10 +77,13 @@ function AssignTeacherModal({ open, setOpen, refeacth }: IModal) {
 
     const feacthTeachers = async () => {
         try {
+            setLoading(true)
             const res = await getUsersByRole("teacher")
             setTeacher(res)
         } catch (error: any) {
             setError(error.message)
+        } finally {
+            setLoading(false)
         }
     }
 
@@ -93,14 +100,67 @@ function AssignTeacherModal({ open, setOpen, refeacth }: IModal) {
         }
     }, [error]);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-
+    const handleChange = (
+        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    ) => {
         const { name, value } = e.target;
+
+        if (name === "teacher_id") {
+            setFormData((prev) => ({
+                ...prev,
+                teacher_id: prev.teacher_id === value ? "" : value,
+            }));
+
+            return;
+        }
+
         setFormData((prev) => ({
             ...prev,
             [name]: value,
         }));
-    }
+    };
+
+
+    const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        console.log(formData)
+
+        if (!formData.subject_id || !formData.section_id || !formData.school_year_id) {
+            toast.error("Please fill all the fields")
+            return
+        }
+        if (!formData.teacher_id) {
+            toast.error("Please select a teacher")
+            return
+        }
+
+        try {
+            await assingTeacher(formData)
+            toast.success("Teacher assigned successfully")
+            refeacth
+            setFormData({
+                teacher_id: "",
+                subject_id: "",
+                section_id: "",
+                school_year_id: "",
+            })
+
+        } catch (error: any) {
+            if (error.errors?.length) {
+                const fieldErrors: Record<string, string> = {};
+
+                error.errors.forEach((err: any) => {
+                    fieldErrors[err.path] = err.msg;
+                });
+                setFormErrors(fieldErrors);
+                toast.error('Fix the highlighted fields');
+                return;
+
+            }
+            toast.error(error.message || "Something went wrong")
+        }
+    };
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center ">
@@ -110,7 +170,7 @@ function AssignTeacherModal({ open, setOpen, refeacth }: IModal) {
                         <h2 className="text-xl font-semibold">Assign Teachers </h2>
                         <button><X size={20} onClick={() => setOpen(false)} /></button>
                     </div>
-                    <div className="min-h-0 flex flex-col gap-4">
+                    <form onSubmit={handleSubmit} className="min-h-0 flex flex-col gap-4">
                         <p className="flex border-b ">Select Info</p>
                         <div className="flex w-full gap-2">
                             <div className="flex flex-col w-full ">
@@ -124,15 +184,21 @@ function AssignTeacherModal({ open, setOpen, refeacth }: IModal) {
                                     name="subject_id"
                                     id="subject_id"
                                     required
+                                    value={formData.subject_id}
                                     onChange={handleChange}
                                     className="w-full px-3 py-2 border rounded-md">
-                                    <option value="default">select subject</option>
+                                    <option value="">select subject</option>
                                     {subjects.length === 0 ? (<option disabled>No Subject</option>) : (
                                         subjects.map((e, index) => (
                                             <option key={index} value={e._id}>{e.name}</option>
                                         ))
                                     )}
                                 </select>
+                                {formErrors.subject_id && (
+                                    <p className="text-red-500 text-sm mt-1">
+                                        {formErrors.subject_id}
+                                    </p>
+                                )}
                             </div>
 
 
@@ -147,15 +213,21 @@ function AssignTeacherModal({ open, setOpen, refeacth }: IModal) {
                                     name="section_id"
                                     id="section_id"
                                     required
-                                    // onChange={handleChange}
+                                    value={formData.section_id}
+                                    onChange={handleChange}
                                     className="w-full px-3 py-2 border rounded-md">
-                                    <option value="default">select section</option>
+                                    <option value="">select section</option>
                                     {section.length === 0 ? (<option disabled>No section</option>) : (
                                         section.map((e, index) => (
                                             <option key={index} value={e._id}>{e.name}</option>
                                         ))
                                     )}
                                 </select>
+                                {formErrors.section_id && (
+                                    <p className="text-red-500 text-sm mt-1">
+                                        {formErrors.section_id}
+                                    </p>
+                                )}
                             </div>
 
 
@@ -170,20 +242,26 @@ function AssignTeacherModal({ open, setOpen, refeacth }: IModal) {
                                     name="school_year_id"
                                     id="school_year_id"
                                     required
+                                    value={formData.school_year_id}
                                     onChange={handleChange}
                                     className="w-full px-3 py-2 border rounded-md">
-                                    <option value="default">select school year</option>
+                                    <option value="">select school year</option>
                                     {schoolYear.length === 0 ? (<option disabled>No School Year</option>) : (
                                         schoolYear.map((e, index) => (
                                             <option key={index} value={e._id}>{e.school_year}</option>
                                         ))
                                     )}
                                 </select>
+                                {formErrors.school_year_id && (
+                                    <p className="text-red-500 text-sm mt-1">
+                                        {formErrors.school_year_id}
+                                    </p>
+                                )}
                             </div>
                         </div>
-                        {/* Students that not enrolled*/}
+                        {/* list of teachers*/}
                         <div className="flex flex-1 flex-col w-full border min-h-120 overflow-auto rounded-xl">
-                            <div className="grid grid-cols-[100px_1fr_80px_70px_1fr] bg-gray-400 py-2 px-4 font-semibold">
+                            <div className="grid grid-cols-[100px_1fr_80px_70px_40px] bg-gray-400 py-2 px-4 font-semibold">
                                 <div className="whitespace-nowrap">Account No.</div>
                                 <div className="whitespace-nowrap">Full Name</div>
                                 <div className="whitespace-nowrap">Gender</div>
@@ -191,25 +269,39 @@ function AssignTeacherModal({ open, setOpen, refeacth }: IModal) {
                                 <div className="whitespace-nowrap flex items-center justify-center">Action</div>
                             </div>
                             <div className="flex min-h-0 flex-col flex-1 overflow-auto">
-                                {teacher.length === 0 ? <div className="flex flex-1 items-center justify-center">No teacher found</div> :
-                                    teacher.map((t, index) => (<div key={index} className="grid grid-cols-[100px_1fr_80px_70px_1fr] py-2 px-4 border-b">
-                                        <div>{t.account_number}</div>
-                                        <div>{t.last_name}, {t.first_name}, {t.middle_name}</div>
-                                        <div>{t.gender.charAt(0).toUpperCase() + t.gender.slice(1)}</div>
-                                        <div>{t.is_active ? "Yes" : "No"}</div>
-                                        <div className="flex items-center justify-center">
-                                            <input
-                                                type="checkbox"
-                                                name="teacher_id"
-                                                value={t._id}
-                                                onChange={handleChange}
-                                                className="w-5 h-5  cursor-pointer text-green-600"
-                                            />
-                                        </div>
-                                    </div>))}
+                                {loading ?
+                                    <div className="flex flex-1 items-center justify-center">Loading...</div>
+                                    :
+                                    teacher.length === 0 ? <div className="flex flex-1 items-center justify-center">No teacher found</div> :
+                                        teacher.map((t, index) => (<div key={index} className="grid grid-cols-[100px_1fr_80px_70px_40px] py-2 px-4 border-b">
+                                            <div>{t.account_number}</div>
+                                            <div>{t.last_name}, {t.first_name}, {t.middle_name}</div>
+                                            <div>{t.gender.charAt(0).toUpperCase() + t.gender.slice(1)}</div>
+                                            <div>{t.is_active ? "Yes" : "No"}</div>
+                                            <div className="flex items-center justify-center">
+                                                <input
+                                                    type="checkbox"
+                                                    name="teacher_id"
+                                                    value={t._id}
+                                                    checked={formData.teacher_id === t._id}
+                                                    onChange={handleChange}
+                                                    className="w-5 h-5 cursor-pointer text-green-600"
+                                                />
+                                            </div>
+                                        </div>))}
                             </div>
                         </div>
-                    </div>
+
+                        <div className="flex w-full justify-end  gap-2">
+                            <button
+                                type="submit"
+                                disabled={loading}
+                                className="px-9 cursor-pointer py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                            >
+                                {loading ? "Saving..." : "Save"}
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>

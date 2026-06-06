@@ -6,6 +6,7 @@ import { getSchoolyears, addSchoolYear } from "../controllers/schoolYear.control
 import { getGradingPeriods } from "../controllers/gradingPeriod.controller";
 import { addAccount, getUsersByRole, getGeneratedNumber } from "../controllers/user.controller";
 import { getAvailableStudentsForEnrollment, enrollStudents, getEnrollStudents } from "../controllers/enrollment.controller";
+import { assingTeacher } from "../controllers/teachingClass.controller";
 
 
 //validation middleware
@@ -13,6 +14,7 @@ import { validate } from "../middlewares/validate";
 import { sectionValidator } from "../middlewares/section.middleware";
 import { validateAccountBeforeSave } from "../middlewares/user.middleware";
 import { validateBeforeEnroll, validateFindUserNotEnrolled } from "../middlewares/enrollment.middleware";
+import { validateBeforeTeacherAssignment } from "../middlewares/teacherAssignment.middleware";
 //kapag nag ka error sa express validator middleware hinde na sya pupunta sa loob ng controller mag return agad ng error
 
 const adminRouter = Router();
@@ -47,5 +49,8 @@ adminRouter.post("/enrollment", validateBeforeEnroll, validate, enrollStudents);
 
 //account number generator
 adminRouter.get("/accountnumber", getGeneratedNumber);
+
+//assign a teacher
+adminRouter.post("/teacherassignment",validateBeforeTeacherAssignment, validate, assingTeacher);
 
 export default adminRouter;

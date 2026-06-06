@@ -12,6 +12,7 @@ import Teachers from "../components/admin/Teachers";
 import Students from "../components/admin/Students";
 import Admins from "../components/admin/Admins";
 import Enrollments from "../components/admin/Enrollments";
+import TeachingClass from "../components/admin/TeachingClass";
 
 function AdminRouter() {
     return (
@@ -20,6 +21,8 @@ function AdminRouter() {
                 <Route path="/" element={<Navigate to="/admin/dashboard" replace/>} />
                 <Route path="dashboard" element={<AdminDashboard/>} />
                 <Route path="enrollments" element={<Enrollments/>} />
+                <Route path="teacherassignments" element={<TeachingClass/>} />
+
 
                 <Route path="teachers" element={<Teachers/>} />
                 <Route path="students" element={<Students/>} />

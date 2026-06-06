@@ -325,7 +325,7 @@ function EnrollStudentsModal({ open, setOpen }: EnrollStudentsModalProps) {
                                     <button className="border p-2 rounded bg-blue-700 text-white"><Search /></button>
                                 </div>
                             </div>
-                            {/* Students that not enrolled for*/}
+                            {/* Students that not enrolled*/}
                             <div className="flex flex-1 flex-col w-full border min-h-120 overflow-auto rounded-xl">
                                 <div className="grid grid-cols-[1fr_1fr_1fr_1fr_100px] bg-gray-400 py-2 px-4 font-semibold" >
                                     <div className="whitespace-nowrap">Account No.</div>

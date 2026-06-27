@@ -21,7 +21,7 @@ function Schoolyears() {
             const data = await getSchoolyears();
             setSchoolYear(data);
         } catch (error: any) {
-            toast.error(error.message || "Something went wrong");
+            toast.error(error.message || "Something went wrong")
         }finally{
             setLoading(false);
         }
@@ -40,7 +40,7 @@ function Schoolyears() {
             toast.success("School year added successfully");
             fetchSchoolyears();
         } catch (error: any) {
-            toast.error(error.message || "Something went wrong");
+            toast.error(error.message || "Something went wrong")
         }finally{
             setLoading(false);
         }

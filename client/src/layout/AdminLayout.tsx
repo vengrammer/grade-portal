@@ -1,5 +1,5 @@
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { BookOpenText, LogOut, ChevronDown } from "lucide-react";
+import { BookOpenText,X, LogOut, ChevronDown,Menu } from "lucide-react";
 import { useState } from "react";
 
 const routes = [
@@ -27,6 +27,7 @@ function AdminLayout() {
     const location = useLocation();
     const [openSchoolData, setOpenSchoolData] = useState(false);
     const [openAccounts, setOpenAccounts] = useState(false);
+    const [menuOpen,setMenuOpen] = useState(false);
 
     function handleNavigate(path: string) {
         navigate(path);
@@ -36,20 +37,26 @@ function AdminLayout() {
         return location.pathname === path;
     }
 
-    return (
-        <div className="flex flex-col h-screen w-full bg-gray-100">
 
-            <header className="flex items-center justify-between px-6 py-3 bg-[#226bfc] text-white border-b-4 border-[#aefe02]">
+    return (
+        <div className="flex flex-col min-h-screen w-full bg-gray-100">
+
+            <header className="flex items-center  justify-between px-6 py-3 bg-[#226bfc] text-white border-b-4 border-[#aefe02]">
                 <div className="flex items-center gap-2">
                     <BookOpenText size={32} className="text-[#00ff08]" />
                     <span className="text-xl font-bold">Grade Portal</span>
                 </div>
+              <div>
+                <button onClick={() => setMenuOpen(!menuOpen)}>{!menuOpen ?<Menu/> : <X/>}</button>
+              </div>
             </header>
 
-            <div className="flex flex-1 min-h-0">
-                <aside className="max-w-60 bg-[#226bfc] text-white flex flex-col p-4 gap-4">
-                    <div className="border-b border-white/20 pb-3">
+            <div className="flex flex-1 min-h-0 overflow-scroll">
+              
+              {menuOpen && <aside className="max-w-60 overflow-scroll transition-transform duration-1000 ease-in-out bg-[#226bfc] text-white flex flex-col p-4 gap-4">
+                    <div className=" flex justify-between border-b border-white/20 pb-3">
                         <p className="text-lg font-bold">Welcome Admin</p>
+                     
                     </div>
                     <div className="flex flex-col gap-2">
                         <p className="text-xs uppercase text-white/60">Main</p>
@@ -134,7 +141,7 @@ function AdminLayout() {
                         )}
                     </div>
 
-                    <div className="mt-auto flex items-center justify-between p-3 rounded-xl bg-[#25048188] border border-white/10">
+                    <div className="flex mb-auto items-center justify-between p-3 rounded-xl bg-[#25048188] border border-white/10">
                         <div className="min-w-0">
                             <p className="truncate text-sm font-semibold">
                                 Gerona Reven Amazonejjjjjjjjjjjj
@@ -147,7 +154,7 @@ function AdminLayout() {
                         </button>
                     </div>
 
-                </aside>
+                </aside>}
                 <main className="flex-1 min-h-0 flex bg-white overflow-hidden">
                     <Outlet />
                 </main>

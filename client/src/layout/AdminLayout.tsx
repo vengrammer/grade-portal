@@ -39,7 +39,7 @@ function AdminLayout() {
 
 
     return (
-        <div className="flex flex-col min-h-screen w-full bg-gray-100">
+        <div className="flex  flex-col min-h-screen w-full bg-gray-100">
 
             <header className="flex items-center  justify-between px-6 py-3 bg-[#226bfc] text-white border-b-4 border-[#aefe02]">
                 <div className="flex items-center gap-2">
@@ -53,7 +53,7 @@ function AdminLayout() {
 
             <div className="flex flex-1 min-h-0 overflow-scroll">
               
-              {menuOpen && <aside className="max-w-60 overflow-scroll transition-transform duration-1000 ease-in-out bg-[#226bfc] text-white flex flex-col p-4 gap-4">
+              {menuOpen && <aside className="max-w-60 absolute z-50 h-screen overflow-scroll transition-transform duration-1000 ease-in-out bg-[#226bfc] text-white flex flex-col p-4 gap-4">
                     <div className=" flex justify-between border-b border-white/20 pb-3">
                         <p className="text-lg font-bold">Welcome Admin</p>
                      

@@ -217,7 +217,7 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
             <div
                 className="absolute inset-0 bg-black/30 backdrop-blur-xs"
             />
-            <div className="relative w-full max-w-200 md:mx-4  bg-white md:rounded-xl shadow-xl p-5 max-h-screen overflow-y-auto">
+            <div className="relative w-full mt-15 max-w-200 md:mx-4  bg-white md:rounded-xl shadow-xl p-5 max-h-screen overflow-y-auto">
                 <button
                     className="absolute top-3 right-3 text-gray-500 hover:text-red-500"
                 >
@@ -574,13 +574,13 @@ function AddNewAccountModal({ roleAccountToAdd, openModal = false, setOpenModal,
                                 </div>
                             </div>
                         </div>
-                        <div className="flex w-full items-center justify-center pt-5">
+                        <div className="flex w-full items-center justify-center pt-5 mb-15">
                             <button
                                 type="submit"
                                 disabled={isLoading}
                                 className="px-15 py-2 bg-blue-500  text-white rounded-md hover:bg-blue-600"
                             >
-                                {isLoading ? "Creating account..." : "Submit"}
+                                {isLoading ? "loading..." : "Submit"}
                             </button>
                         </div>
                     </div>

@@ -16,8 +16,8 @@ function TeacherLayout() {
                 <button onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X/> : <Menu/>}</button>
               </div>
             </header>
-            <div className="flex  flex-1 w-full h-ful bg-amber-400 min-h-0 ">
-              {menuOpen && <aside className="flex transform transition-transform duration-500 ease-in-out flex-col h-full gap-2 w-77 bg-[#226bfc] text-white overflow-scroll">
+            <div className="flex  flex-1 w-full h-full bg-amber-400 min-h-0 ">
+              {menuOpen && <aside className="flex absolute z-50 transform transition-transform duration-500 ease-in-out flex-col h-full gap-2 w-77 bg-[#226bfc] text-white overflow-scroll">
                     <div className="flex gap-2 p-2 items-center justify-center border-b-2 border-[#aefe02]">
                         <span className="text-2xl  font-bold">Welcome Teacher</span>
                     </div>

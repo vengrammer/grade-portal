@@ -209,7 +209,7 @@ function EnrollStudentsModal({ open, setOpen }: EnrollStudentsModalProps) {
         <div className="fixed inset-0 z-50 flex items-center justify-center ">
             <div className="absolute inset-0 bg-black/30 backdrop-blur-xs flex items-center justify-center">
                 <div className="relative w-full max-w-300 md:mx-4 bg-white md:rounded-xl shadow-xl p-5 max-h-screen overflow-y-auto">
-                    <div className="flex w-full justify-between md:mb-2">
+                    <div className="flex w-full justify-between md:mb-2 mt-10">
                         <h2 className="text-xl font-semibold">Enroll A Students </h2>
                         <button><X size={20} onClick={() => setOpen(false)} /></button>
                     </div>
@@ -356,7 +356,7 @@ function EnrollStudentsModal({ open, setOpen }: EnrollStudentsModalProps) {
                                         ))}
                                 </div>
                             </div>
-                            <div className="flex flex-1 w-full item-center justify-end">
+                            <div className="flex flex-1 w-full item-center justify-end mb-10">
                                 <button
                                     type="submit"
                                     className=" border-2 hover:scale-105 transition transform duration-200 cursor-pointer py-2 px-8 text-white rounded-sm bg-green-700 flex items-center gap-2">Submit <SendHorizonal /></button>

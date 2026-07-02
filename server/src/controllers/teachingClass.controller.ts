@@ -27,3 +27,31 @@ export const assingTeacher = async (req: Request, res: Response) => {
         return res.status(500).json({ message: "Internal Server Error" });
     }
 }
+
+export const getAllAssignTeachers  = async (req: Request, res:Response) => {
+  
+  const {
+   school_year_id,
+   subject_id,
+   search_text,
+  } = req.query;
+
+  const match: Record<string, string> = {}
+
+  if(school_year){
+    match.school_year_id = new Types.ObjectId(school_year_id)
+  }
+
+    if(subject_id){
+    match.subject_id = new Types.ObjectId(subject_id)
+  }
+  const search = typeof search_text === "string" ? search_text.trim() : "";
+
+  
+  try {
+    
+  } catch (error) {
+    console.error(error)
+    return res.status(500).json({message: "Internal Server Error"});
+  }
+}

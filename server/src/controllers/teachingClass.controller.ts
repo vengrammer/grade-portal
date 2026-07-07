@@ -28,13 +28,19 @@ export const assingTeacher = async (req: Request, res: Response) => {
     }
 }
 
+interface IGetTeachingClass {
+    search_text: string,
+    school_year_id: Types.ObjectId;
+    subject_id: Types.ObjectId
+}
+
 export const getAllAssignTeachers  = async (req: Request, res:Response) => {
   
   const {
    school_year_id,
    subject_id,
    search_text,
-  } = req.query;
+  } = req.query as IGetTeachingClass;
 
   const match: Record<string, string> = {}
 
@@ -42,14 +48,127 @@ export const getAllAssignTeachers  = async (req: Request, res:Response) => {
     match.school_year_id = new Types.ObjectId(school_year_id)
   }
 
-    if(subject_id){
+  if(subject_id){
     match.subject_id = new Types.ObjectId(subject_id)
   }
   const search = typeof search_text === "string" ? search_text.trim() : "";
 
   
   try {
-    
+    const teachingClass = await TeachingClass.aggregate([
+    {
+      $match: match,
+    },
+    {
+      $lookup: {
+        from: "users",
+        localField: "teacher_id",
+        foreignField:"_id",
+        as: "teacher",
+      }
+    },
+    {
+      $unwind: {
+        path: "$teacher",
+        preserveNullAndEmptyArrays: true,
+      }
+    },
+    {
+      $lookup: {
+        from: "schoolyears",
+        localField: "school_year_id",
+        foreignField: "_id",
+        as: "schoolyear",
+      }
+    },
+    {
+     $unwind: {
+      path: "$schoolyear",
+      preserveNullAndEmptyArrays: true,
+     }
+    }
+    ,{
+      $lookup: {
+        from: "subjects",
+        localField: "subject_id",
+        foreignField:"_id",
+        as: "subject",
+      }
+    },{
+      $unwind: {
+        path: "$subject",
+        preserveNullAndEmptyArrays: true,
+      }
+    },{
+      $lookup: {
+        from: "sections",
+        localField: "section_id",
+        foreignField: "_id",
+        as: "section",
+      }
+    },
+    {
+     $unwind: {
+       path: "$section",
+       preserveNullAndEmptyArrays: true,
+     }
+    },{
+      $project: {
+        _id: 1,
+        createdAt: 1,
+        teacher: {
+          _id: 1,
+          first_name: 1,
+          middle_name: 1,
+          last_name:1,
+          account_number:1,
+        },
+        schoolyear: {
+          school_year:1,
+        },    
+        section: {
+          name:1,
+        }, 
+        subject: {
+            name:1,
+        },
+      },
+    }
+    ,...(search
+        ? [
+          {
+            $match: {
+              $or: [
+                {
+                  "teacher.first_name": {
+                    $regex: search,
+                    $options: "i",
+                  },
+                },
+                {
+                  "teacher.last_name": {
+                    $regex: search,
+                    $options: "i",
+                  },
+                },
+                {
+                  "teacher.middle_name": {
+                    $regex: search,
+                    $options: "i",
+                  },
+                },
+                {
+                  "teacher.account_number": {
+                    $regex: search,
+                    $options: "i",
+                  },
+                },
+              ],
+            },
+          },
+        ]
+        : []),
+  ])
   } catch (error) {
     console.error(error)
     return res.status(500).json({message: "Internal Server Error"});

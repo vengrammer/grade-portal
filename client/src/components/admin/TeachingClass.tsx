@@ -4,49 +4,43 @@ import { LoaderCircleIcon, Plus, Search, Trash2 } from "lucide-react";
 import AssignTeacherModal from "../modal/AssignTeacherModal";
 import React, { useEffect, useState } from "react";
     
-import { getAllEnrolledStudents } from "../../hooks/enrollment";
+import { getAllAssignTeacher } from "../../hooks/teacherAssingment";
+
 import { toast } from "react-toastify";
 import LoadingScreen from "../shared/LoadingScreen";
 import { dateFormatter } from "../../utils/dateFormatter";
 
 
 import { getSchoolyears } from "../../hooks/schoolYear";
-import { getGradeLevels } from "../../hooks/gradeLevel";
-import { getSections } from "../../hooks/section";
 
 import type { SchoolYearType } from "../../types/schoolYear.type";
-import type { GradeLevelType } from "../../types/gradeLevel.type";
-import type { SectionType } from "../../types/sections.type";
+import type { SubjectType } from "../../types/subjects.type";
 
 
-interface IEnrolledStudents {
+interface ITeachingClass {
     _id: string,
-    createdAt: string;
-    student: {
-        _id: string;
-        account_number: string;
-        first_name: string;
-        last_name: string;
-        middle_name: string;
-    },
-    gradelevel: {
-        name: string;
-    },
-    section: {
-        name: string;
-    },
-    school_sem: string;
-    schoolyear: {
-        school_year: string;
-    }
-
+        createdAt: string,
+        teacher: {
+          _id: string,
+          first_name: string,
+          middle_name: string,
+          last_name:string,
+          account_number:string,
+        },
+        schoolyear: {
+          school_year:string,
+        },    
+        section: {
+          name:string,
+        }, 
+        subject: {
+            name:string,
+        },
 }
 
 interface IFilter {
-    school_year_id: string;
-    grade_level_id?: string;
-    school_sem?: string;
-    section_id?: string;
+    school_year_id?: string;
+    subject_id?:string;
     search_text?: string;
 }
 
@@ -55,11 +49,10 @@ function TeachingClass() {
 
     //filter data
     const [schoolYear, setSchoolYear] = useState<SchoolYearType[]>([]);
-    const [gradeLevel, setGradeLevel] = useState<GradeLevelType[]>([]);
-    const [section, setSection] = useState<SectionType[]>([]);
+    const [subject, setSubject] = useState<SubjectType[]>([])
 
     const [openModal, setOpenModal] = useState(false);
-    const [enrolledStudents, setEnrolledStudents] = useState<IEnrolledStudents[]>([]);
+    const [allAssignteacher, setAllAssignTeacher] = useState<ITeachingClass[]>([]);
     const [loading, setLoading] = useState(false);
 
     const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -68,9 +61,7 @@ function TeachingClass() {
 
     const [filterData, setFilterData] = useState<IFilter>({
         school_year_id: "",
-        grade_level_id: "",
-        school_sem: "",
-        section_id: "",
+        subject_id:"",
         search_text: "",
     });
 
@@ -83,11 +74,11 @@ function TeachingClass() {
     };
 
 
-    const fetchEnrolledStudents = async (filters: IFilter) => {
+    const fetchAssignTeacher = async (filters: IFilter) => {
         try {
             setLoadingTable(true);
-            const data = await getAllEnrolledStudents(filters);
-            setEnrolledStudents(data);
+            const data = await getAllAssignTeacher(filters);
+            setAllAssignTeacher(data);
         } catch (error: any) {
             toast.error(error.message || "Something went wrong");
         } finally {
@@ -105,26 +96,24 @@ function TeachingClass() {
     }, [filterData.search_text]);
 
     useEffect(() => {
-        fetchEnrolledStudents({
+        fetchAssignTeacher({
             ...filterData,
             search_text: debouncedSearch,
         });
     }, [
         debouncedSearch,
         filterData.school_year_id,
-        filterData.grade_level_id,
-        filterData.section_id,
-        filterData.school_sem,
+        filterData.subject_id,
     ]);
 
 
-    const fetchSchoolYearAndGradelevel = async () => {
+    const fetchSchoolYearAndSubject = async () => {
         try {
             setLoading(true);
             const data = await getSchoolyears();
             setSchoolYear(data);
-            const data2 = await getGradeLevels();
-            setGradeLevel(data2);
+            const data2 = await getSubjects();
+            setSubject(data2);
         } catch (error: any) {
             toast.error(error.message || "Something went wrong");
         } finally {
@@ -133,30 +122,13 @@ function TeachingClass() {
     }
 
     useEffect(() => {
-        fetchSchoolYearAndGradelevel();
-        fetchEnrolledStudents({
+        fetchSchoolYearAndSubject();
+        fetchAssignTeacher({
             ...filterData,
             search_text: debouncedSearch,
         });
     }, []);
 
-    const fetchSection = async () => {
-        if (!filterData.grade_level_id) return;
-        if (filterData.grade_level_id === "All") return;
-        try {
-            const data = await getSections(filterData.grade_level_id);
-            setSection(data);
-        } catch (error: any) {
-            toast.error(error.message || "Something went wrong");
-        }
-    }
-
-    useEffect(() => {
-        if(filterData.grade_level_id === ""){
-            setSection([]);
-        };
-        fetchSection();
-    }, [filterData.grade_level_id])
 
     return (
         <div className="flex relative flex-col flex-1 min-h-0 w-full p-4">
@@ -225,35 +197,9 @@ function TeachingClass() {
                                         </select>
                                     </div>
 
-                                    <div className="flex items-center gap-2">
-                                        <label className="text-sm font-medium text-blue-700">
-                                            Section
-                                        </label>
-                                        <select
-                                            name="section_id"
-                                            onChange={handleFilterChange}
-                                            className="px-2 py-1 border rounded-md">
-                                            <option value="">All</option>
-                                            {section.length === 0 ? <option disabled>No Selected Grade Level</option>
-                                                : section.map((section, index) => (
-                                                    <option key={index} value={section._id}>{section.name}</option>
-                                                ))}
-                                        </select>
-                                    </div>
+                                    
 
-                                    <div className="flex items-center gap-2">
-                                        <label className="text-sm font-medium text-blue-700">
-                                            Semester
-                                        </label>
-                                        <select
-                                            name="school_sem"
-                                            onChange={handleFilterChange}
-                                            className="px-2 py-1 border rounded-md">
-                                            <option value="">All</option>
-                                            <option value="1st">1st</option>
-                                            <option value="2nd">2nd</option>
-                                        </select>
-                                    </div>
+                                    
                                 </div>
                             </div>
                         </div>

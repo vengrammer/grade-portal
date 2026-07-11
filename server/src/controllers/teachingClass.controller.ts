@@ -52,6 +52,9 @@ export const getAllAssignTeachers  = async (req: Request, res:Response) => {
     match.subject_id = new Types.ObjectId(subject_id)
   }
   const search = typeof search_text === "string" ? search_text.trim() : "";
+  if(search_text){
+    match.search_text = search:
+  }
 
   
   try {

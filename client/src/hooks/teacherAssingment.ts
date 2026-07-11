@@ -35,6 +35,7 @@ interface IGetTeachingClass {
     school_year_id: string,
     subject_id: string,
 }
+
 export const getAllAssignTeacher = async ({search_text, school_year_id,subject_id} : IGetTeachingClass) => {
   const params = new URLSearchParams();
 
@@ -48,6 +49,21 @@ export const getAllAssignTeacher = async ({search_text, school_year_id,subject_i
     params.append("subject_id", subject_id)
   }
 
-  const response = await fetch(`${api}/teacherassignment`)
+  const response = await fetch(`${api}/teacherassignment?${params.toString()}`,{
+    method: "GET",
+    credentials: "includes",
+  });
+
+  const contentType = response.headers.get("content-type");
+    if (!contentType || !contentType.includes("application/json")) {
+        throw new Error("Server error. Please try again later.");
+    }
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw data;
+    }
+    return data;
   
 }

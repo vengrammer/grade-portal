@@ -29,9 +29,9 @@ export const assingTeacher = async (req: Request, res: Response) => {
 }
 
 interface IGetTeachingClass {
-    search_text: string,
+    search_text: string;
     school_year_id: Types.ObjectId;
-    subject_id: Types.ObjectId
+    subject_id: Types.ObjectId;
 }
 
 export const getAllAssignTeachers  = async (req: Request, res:Response) => {
@@ -40,11 +40,11 @@ export const getAllAssignTeachers  = async (req: Request, res:Response) => {
    school_year_id,
    subject_id,
    search_text,
-  } = req.query as IGetTeachingClass;
+  } = req.query as unknown as IGetTeachingClass;
 
-  const match: Record<string, string> = {}
+  const match: any = {}
 
-  if(school_year){
+  if(school_year_id){
     match.school_year_id = new Types.ObjectId(school_year_id)
   }
 
@@ -53,10 +53,8 @@ export const getAllAssignTeachers  = async (req: Request, res:Response) => {
   }
   const search = typeof search_text === "string" ? search_text.trim() : "";
   if(search_text){
-    match.search_text = search:
+    match.search_text = search;
   }
-
-  
   try {
     const teachingClass = await TeachingClass.aggregate([
     {
@@ -172,6 +170,7 @@ export const getAllAssignTeachers  = async (req: Request, res:Response) => {
         ]
         : []),
   ])
+  res.status(200).json(teachingClass);
   } catch (error) {
     console.error(error)
     return res.status(500).json({message: "Internal Server Error"});

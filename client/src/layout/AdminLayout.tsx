@@ -27,7 +27,7 @@ function AdminLayout() {
     const location = useLocation();
     const [openSchoolData, setOpenSchoolData] = useState(false);
     const [openAccounts, setOpenAccounts] = useState(false);
-    const [menuOpen,setMenuOpen] = useState(false);
+    const [menuOpen,setMenuOpen] = useState(true);
 
     function handleNavigate(path: string) {
         navigate(path);

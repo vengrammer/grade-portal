@@ -22,7 +22,7 @@ export const assingTeacher = async ({school_year_id, section_id, subject_id, tea
         throw new Error("Server error. Please try again later.");
     }
 
-    const data = await response.json(); ho
+    const data = await response.json();
 
     if (!response.ok) {
         throw data;
@@ -31,9 +31,9 @@ export const assingTeacher = async ({school_year_id, section_id, subject_id, tea
 }
 
 interface IGetTeachingClass {
-    search_text: string,
-    school_year_id: string,
-    subject_id: string,
+    search_text?: string,
+    school_year_id?: string,
+    subject_id?: string,
 }
 
 export const getAllAssignTeacher = async ({search_text, school_year_id,subject_id} : IGetTeachingClass) => {
@@ -51,7 +51,7 @@ export const getAllAssignTeacher = async ({search_text, school_year_id,subject_i
 
   const response = await fetch(`${api}/teacherassignment?${params.toString()}`,{
     method: "GET",
-    credentials: "includes",
+    credentials: "include",
   });
 
   const contentType = response.headers.get("content-type");

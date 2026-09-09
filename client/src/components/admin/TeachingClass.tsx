@@ -2,8 +2,8 @@ import { LoaderCircleIcon, Plus, Search, Trash2 } from "lucide-react";
 
 
 import AssignTeacherModal from "../modal/AssignTeacherModal";
-import React, { useEffect, useState } from "react";
-    
+import React, { useCallback, useEffect, useState } from "react";
+
 import { getAllAssignTeacher } from "../../hooks/teacherAssingment";
 
 import { toast } from "react-toastify";
@@ -16,31 +16,32 @@ import { getSchoolyears } from "../../hooks/schoolYear";
 import type { SchoolYearType } from "../../types/schoolYear.type";
 import type { SubjectType } from "../../types/subjects.type";
 
+import { getSubjects } from "../../hooks/subjects";
 
 interface ITeachingClass {
     _id: string,
-        createdAt: string,
-        teacher: {
-          _id: string,
-          first_name: string,
-          middle_name: string,
-          last_name:string,
-          account_number:string,
-        },
-        schoolyear: {
-          school_year:string,
-        },    
-        section: {
-          name:string,
-        }, 
-        subject: {
-            name:string,
-        },
+    createdAt: string,
+    teacher: {
+        _id: string,
+        first_name: string,
+        middle_name: string,
+        last_name: string,
+        account_number: string,
+    },
+    schoolyear: {
+        school_year: string,
+    },
+    section: {
+        name: string,
+    },
+    subject: {
+        name: string,
+    },
 }
 
 interface IFilter {
     school_year_id?: string;
-    subject_id?:string;
+    subject_id?: string;
     search_text?: string;
 }
 
@@ -61,7 +62,7 @@ function TeachingClass() {
 
     const [filterData, setFilterData] = useState<IFilter>({
         school_year_id: "",
-        subject_id:"",
+        subject_id: "",
         search_text: "",
     });
 
@@ -74,7 +75,7 @@ function TeachingClass() {
     };
 
 
-    const fetchAssignTeacher = async (filters: IFilter) => {
+    const fetchAssignTeacher = useCallback(async (filters: IFilter) => {
         try {
             setLoadingTable(true);
             const data = await getAllAssignTeacher(filters);
@@ -84,7 +85,14 @@ function TeachingClass() {
         } finally {
             setLoadingTable(false);
         }
-    };
+    }, []);
+
+    const refreshTeachingClasses = useCallback(() => {
+        fetchAssignTeacher({
+            ...filterData,
+            search_text: debouncedSearch,
+        });
+    }, [debouncedSearch, fetchAssignTeacher, filterData]);
 
     //debounce search delay a search by one second 
     useEffect(() => {
@@ -96,14 +104,12 @@ function TeachingClass() {
     }, [filterData.search_text]);
 
     useEffect(() => {
-        fetchAssignTeacher({
-            ...filterData,
-            search_text: debouncedSearch,
-        });
+        refreshTeachingClasses();
     }, [
         debouncedSearch,
         filterData.school_year_id,
         filterData.subject_id,
+        refreshTeachingClasses,
     ]);
 
 
@@ -123,11 +129,8 @@ function TeachingClass() {
 
     useEffect(() => {
         fetchSchoolYearAndSubject();
-        fetchAssignTeacher({
-            ...filterData,
-            search_text: debouncedSearch,
-        });
-    }, []);
+        refreshTeachingClasses();
+    }, [refreshTeachingClasses]);
 
 
     return (
@@ -181,7 +184,7 @@ function TeachingClass() {
                                                 ))}
                                         </select>
                                     </div>
-                                    <div className="flex items-center gap-2">
+                                    {/* <div className="flex items-center gap-2">
                                         <label className="text-sm font-medium text-blue-700">
                                             Grade Level
                                         </label>
@@ -195,11 +198,11 @@ function TeachingClass() {
                                                     <option key={index} value={grade._id}>{grade.name}</option>
                                                 ))}
                                         </select>
-                                    </div>
+                                    </div> */}
 
-                                    
 
-                                    
+
+
                                 </div>
                             </div>
                         </div>
@@ -209,9 +212,8 @@ function TeachingClass() {
                                 <div>School Year</div>
                                 <div>Account No.</div>
                                 <div>Full Name.</div>
-                                <div>Grade Level</div>
                                 <div>Section</div>
-                                <div>Semester</div>
+                                <div>Subject</div>
                                 <div>Enrolled Date</div>
                                 <div className="flex items-center justify-center">Action</div>
                             </div>
@@ -219,17 +221,16 @@ function TeachingClass() {
                         {/*list of students enrolled*/}
                         {loadingTable ? (<div className="flex flex-col gap-2 flex-1 items-center justify-center"><LoaderCircleIcon size={70} className="animate-spin text-blue-500" /><p>Loading enrolled students</p></div>)
                             : (<div className="flex flex-1 w-full flex-col border min-h-0 overflow-auto">
-                                {enrolledStudents.length === 0 ?
+                                {allAssignteacher.length === 0 ?
                                     <div className="flex flex-1 items-center justify-center">No enrolled students found</div>
-                                    : enrolledStudents.map((enroll, index) =>
+                                    : allAssignteacher.map((enroll, index) =>
                                     (<div key={enroll._id} className="grid  grid-cols-[50px_1fr_1fr_1fr_1fr_1fr_1fr_1fr_40px] py-3 px-3 border-b hover:bg-gray-100 ">
                                         <div>{index + 1}</div>
                                         <div>{enroll.schoolyear.school_year}</div>
-                                        <div>{enroll.student.account_number}</div>
-                                        <div>{enroll.student.last_name}, {enroll.student.first_name}, {enroll.student.middle_name}</div>
-                                        <div>{enroll.gradelevel.name}</div>
+                                        <div>{enroll.teacher.account_number}</div>
+                                        <div>{enroll.teacher.last_name}, {enroll.teacher.first_name}, {enroll.teacher.middle_name}</div>
                                         <div>{enroll.section.name}</div>
-                                        <div>{enroll.school_sem}</div>
+                                        <div>{enroll.subject.name}</div>
                                         <div>{dateFormatter(enroll.createdAt)}</div>
                                         <div className="flex items-center justify-center"><Trash2 /></div>
                                     </div>))}
@@ -237,7 +238,7 @@ function TeachingClass() {
                     </div>
                 </div>
             </div>
-            {openModal && <AssignTeacherModal open={openModal} setOpen={setOpenModal} />}
+            {openModal && <AssignTeacherModal open={openModal} setOpen={setOpenModal} refeacth={refreshTeachingClasses} />}
             {loading && <LoadingScreen loadingFor="component" />}
         </div>
     )

@@ -136,15 +136,15 @@ function AssignTeacherModal({ open, setOpen, refeacth }: IModal) {
         }
 
         try {
-            await assingTeacher(formData)
-            toast.success("Teacher assigned successfully")
-            refeacth
+            await assingTeacher(formData);
+            refeacth();
+            toast.success("Teacher assigned successfully");
             setFormData({
                 teacher_id: "",
                 subject_id: "",
                 section_id: "",
                 school_year_id: "",
-            })
+            });
 
         } catch (error: any) {
             if (error.errors?.length) {

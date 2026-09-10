@@ -14,9 +14,6 @@ import { dateFormatter } from "../../utils/dateFormatter";
 import { getSchoolyears } from "../../hooks/schoolYear";
 
 import type { SchoolYearType } from "../../types/schoolYear.type";
-import type { SubjectType } from "../../types/subjects.type";
-
-import { getSubjects } from "../../hooks/subjects";
 
 interface ITeachingClass {
     _id: string,
@@ -50,16 +47,11 @@ function TeachingClass() {
 
     //filter data
     const [schoolYear, setSchoolYear] = useState<SchoolYearType[]>([]);
-    const [subject, setSubject] = useState<SubjectType[]>([])
-
     const [openModal, setOpenModal] = useState(false);
     const [allAssignteacher, setAllAssignTeacher] = useState<ITeachingClass[]>([]);
     const [loading, setLoading] = useState(false);
-
     const [debouncedSearch, setDebouncedSearch] = useState("");
-
     const [loadingTable, setLoadingTable] = useState(false);
-
     const [filterData, setFilterData] = useState<IFilter>({
         school_year_id: "",
         subject_id: "",
@@ -118,8 +110,8 @@ function TeachingClass() {
             setLoading(true);
             const data = await getSchoolyears();
             setSchoolYear(data);
-            const data2 = await getSubjects();
-            setSubject(data2);
+            // const data2 = await getSubjects();
+            // setSubject(data2);
         } catch (error: any) {
             toast.error(error.message || "Something went wrong");
         } finally {
@@ -184,25 +176,6 @@ function TeachingClass() {
                                                 ))}
                                         </select>
                                     </div>
-                                    {/* <div className="flex items-center gap-2">
-                                        <label className="text-sm font-medium text-blue-700">
-                                            Grade Level
-                                        </label>
-                                        <select
-                                            name="grade_level_id"
-                                            onChange={handleFilterChange}
-                                            className="px-2 py-1 border rounded-md">
-                                            <option value="">All</option>
-                                            {gradeLevel.length === 0 ? <option disabled>No Grade Level</option>
-                                                : gradeLevel.map((grade, index) => (
-                                                    <option key={index} value={grade._id}>{grade.name}</option>
-                                                ))}
-                                        </select>
-                                    </div> */}
-
-
-
-
                                 </div>
                             </div>
                         </div>

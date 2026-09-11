@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import adminRouter from "./routes/admin.route";
+import teacherRouter from "./routes/teacher.route";
 import morgan = require("morgan");
 import { errorHandler } from "./middlewares/error.middleware";
 dotenv.config();
@@ -28,6 +29,7 @@ app.get("/", (req, res) => {
 
 //admin routes
 app.use("/api", adminRouter);
+app.use("/api/teacher", teacherRouter);
 
 app.use(errorHandler);
 

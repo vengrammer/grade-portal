@@ -6,7 +6,7 @@ import { getSchoolyears, addSchoolYear } from "../controllers/schoolYear.control
 import { getGradingPeriods } from "../controllers/gradingPeriod.controller";
 import { addAccount, getUsersByRole, getGeneratedNumber } from "../controllers/user.controller";
 import { getAvailableStudentsForEnrollment, enrollStudents, getEnrollStudents } from "../controllers/enrollment.controller";
-import { assingTeacher , getAllAssignTeachers} from "../controllers/teachingClass.controller";
+import { assignTeacher , getAllAssignTeachers} from "../controllers/teachingClass.controller";
 
 
 //validation middleware
@@ -51,7 +51,7 @@ adminRouter.post("/enrollment", validateBeforeEnroll, validate, enrollStudents);
 adminRouter.get("/accountnumber", getGeneratedNumber);
 
 //assign a teacher to the class
-adminRouter.post("/teacherassignment",validateBeforeTeacherAssignment, validate, assingTeacher);
+adminRouter.post("/teacherassignment",validateBeforeTeacherAssignment, validate, assignTeacher);
 adminRouter.get("/teacherassignment",getAllAssignTeachers);
 
 export default adminRouter;

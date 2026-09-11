@@ -22,4 +22,7 @@ export const validateBeforeTeacherAssignment = [
         .withMessage("Select a teacher")
         .isMongoId()
         .withMessage("Invalid teacher"),
+    body("school_sem")
+        .notEmpty()
+        .withMessage("Select a school sem")
 ]

@@ -26,6 +26,13 @@ const teachingClassSchema = new Schema<ITeachingClass>(
             required: true,
         },
 
+
+        school_sem: {
+            type: String,
+            enum: ["1st", "2nd"],
+            required: true,
+        },
+
         is_adviser: {
             type: Boolean,
             default: false,
@@ -35,7 +42,7 @@ const teachingClassSchema = new Schema<ITeachingClass>(
 );
 
 teachingClassSchema.index(
-    { teacher_id: 1, subject_id: 1, section_id: 1, school_year_id: 1 },
+    { teacher_id:1, subject_id:1,section_id:1,school_year_id:1, school_sem: 1 },
     { unique: true }
 );
 

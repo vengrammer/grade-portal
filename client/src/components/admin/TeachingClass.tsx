@@ -18,6 +18,7 @@ import type { SchoolYearType } from "../../types/schoolYear.type";
 interface ITeachingClass {
     _id: string,
     createdAt: string,
+    school_sem: string,
     teacher: {
         _id: string,
         first_name: string,
@@ -186,6 +187,7 @@ function TeachingClass() {
                                 <div>Account No.</div>
                                 <div>Full Name.</div>
                                 <div>Section</div>
+                                <div>Semester</div>
                                 <div>Subject</div>
                                 <div>Enrolled Date</div>
                                 <div className="flex items-center justify-center">Action</div>
@@ -203,6 +205,7 @@ function TeachingClass() {
                                         <div>{enroll.teacher.account_number}</div>
                                         <div>{enroll.teacher.last_name}, {enroll.teacher.first_name}, {enroll.teacher.middle_name}</div>
                                         <div>{enroll.section.name}</div>
+                                        <div>{enroll.school_sem}</div>
                                         <div>{enroll.subject.name}</div>
                                         <div>{dateFormatter(enroll.createdAt)}</div>
                                         <div className="flex items-center justify-center"><Trash2 /></div>

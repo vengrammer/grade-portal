@@ -6,14 +6,15 @@ interface ITeachingClass {
     teacher_id: Types.ObjectId;
     section_id: Types.ObjectId;
     school_year_id: Types.ObjectId;
-    subject_id: Types.ObjectId
+    subject_id: Types.ObjectId;
+    school_sem: string;
 }
 
 export const assingTeacher = async (req: Request, res: Response) => {
     try {
-        const { teacher_id, section_id, school_year_id, subject_id } = req.body as ITeachingClass
+        const { teacher_id, section_id, school_year_id, subject_id, school_sem } = req.body as ITeachingClass
 
-        const response = await TeachingClass.create({ teacher_id: teacher_id, section_id: section_id, school_year_id: school_year_id, subject_id: subject_id });
+        const response = await TeachingClass.create({ teacher_id: teacher_id, section_id: section_id, school_year_id: school_year_id, subject_id: subject_id, school_sem:school_sem });
         return res.status(200).json(response);
     } catch (error: any) {
 
@@ -117,6 +118,7 @@ export const getAllAssignTeachers  = async (req: Request, res:Response) => {
       $project: {
         _id: 1,
         createdAt: 1,
+        school_sem: 1,
         teacher: {
           _id: 1,
           first_name: 1,

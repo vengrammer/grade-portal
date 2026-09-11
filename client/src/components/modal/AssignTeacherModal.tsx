@@ -27,6 +27,7 @@ interface ITeacherAssignmet {
     subject_id: string
     section_id: string
     school_year_id: string
+    school_sem:string
 }
 
 function AssignTeacherModal({ open, setOpen, refeacth }: IModal) {
@@ -36,6 +37,7 @@ function AssignTeacherModal({ open, setOpen, refeacth }: IModal) {
         subject_id: "",
         section_id: "",
         school_year_id: "",
+        school_sem: ""
     });
 
     if (!open) return null
@@ -44,6 +46,7 @@ function AssignTeacherModal({ open, setOpen, refeacth }: IModal) {
     const [subjects, setSubjects] = useState<SubjectType[]>([]);
     const [section, setSection] = useState<SectionType[]>([]);
     const [teacher, setTeacher] = useState<UserType[]>([]);
+    const [school_sem, setSchoolSem] = useState();
     const [loading, setLoading] = useState(false);
 
     const [formErrors, setFormErrors] = useState<Record<string, string>>({})
@@ -144,6 +147,7 @@ function AssignTeacherModal({ open, setOpen, refeacth }: IModal) {
                 subject_id: "",
                 section_id: "",
                 school_year_id: "",
+                school_sem: "",
             });
 
         } catch (error: any) {
@@ -255,6 +259,31 @@ function AssignTeacherModal({ open, setOpen, refeacth }: IModal) {
                                 {formErrors.school_year_id && (
                                     <p className="text-red-500 text-sm mt-1">
                                         {formErrors.school_year_id}
+                                    </p>
+                                )}
+                            </div>
+
+                            <div className="flex flex-col w-full ">
+                                <label
+                                    htmlFor="school_sem"
+                                    className="block text-gray-700 font-semibold"
+                                >
+                                    School Sem
+                                </label>
+                                <select
+                                    name="school_sem"
+                                    id="school_sem"
+                                    required
+                                    value={formData.school_sem}
+                                    onChange={handleChange}
+                                    className="w-full px-3 py-2 border rounded-md">
+                                    <option value="">select school year</option>
+                                    <option value="1st">1st</option>
+                                     <option value="2nd">2nd</option>
+                                </select>
+                                {formErrors.school_sem && (
+                                    <p className="text-red-500 text-sm mt-1">
+                                        {formErrors.school_sem}
                                     </p>
                                 )}
                             </div>

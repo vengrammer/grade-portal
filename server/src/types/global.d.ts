@@ -133,6 +133,8 @@ declare global {
 
         school_year_id: Types.ObjectId | ISchoolYear;
 
+        school_sem: string;
+
         is_adviser?: boolean;
 
         createdAt?: Date;

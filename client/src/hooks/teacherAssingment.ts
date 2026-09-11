@@ -4,16 +4,17 @@ interface ITeacherAssignment {
     school_year_id: string,
     section_id: string,
     subject_id: string,
-    teacher_id: string
+    teacher_id: string,
+    school_sem: string,
 }
 
-export const assingTeacher = async ({school_year_id, section_id, subject_id, teacher_id}: ITeacherAssignment) => {
+export const assingTeacher = async ({school_year_id, section_id, subject_id, teacher_id, school_sem}: ITeacherAssignment) => {
     const response = await fetch(`${api}/teacherassignment`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         }
-        , body: JSON.stringify({ school_year_id, section_id, subject_id, teacher_id })
+        , body: JSON.stringify({ school_year_id, section_id, subject_id, teacher_id, school_sem })
     });
 
     // check if the content type is application/json... meaning it will not show an html error page
